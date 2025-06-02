@@ -14,6 +14,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::post('/update', [DashboardController::class, 'update'])->name('pembayaran.update');
     Route::post('/tambah-minggu', [DashboardController::class, 'tambahMinggu'])->name('pembayaran.tambah_minggu');
+    Route::post('/hapus-minggu', [DashboardController::class, 'hapusMinggu'])->name('pembayaran.hapus_minggu');
 });
 
 // Login dan logout untuk bendahara
