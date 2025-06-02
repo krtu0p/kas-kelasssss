@@ -50,4 +50,19 @@ class DashboardController extends Controller
 
         return back()->with('success', "Minggu ke-$next ditambahkan!");
     }
+    public function hapusMinggu()
+    {
+    // Ambil minggu terbesar
+    $maxMinggu = Pembayaran::max('minggu_ke');
+
+    if ($maxMinggu) {
+        // Hapus semua data pembayaran untuk minggu terakhir
+        Pembayaran::where('minggu_ke', $maxMinggu)->delete();
+
+        return redirect()->back()->with('success', "Minggu ke-$maxMinggu berhasil dihapus.");
+    }
+
+    return redirect()->back()->with('success', 'Tidak ada minggu yang bisa dihapus.');
+    }
+
 }

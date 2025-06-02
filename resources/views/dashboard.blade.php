@@ -51,6 +51,12 @@
             <button type="submit" class="btn btn-success">Tambah Minggu</button>
         </form>
 
+        <form method="POST" action="{{ route('pembayaran.hapus_minggu') }}" class="mt-3">
+    @csrf
+    <button type="submit" class="btn btn-warning">Hapus Minggu Terakhir (M{{ $maxMinggu }})</button>
+</form>
+
+
         <form method="POST" action="{{ route('logout') }}" class="mt-3">
             @csrf
             <button type="submit" class="btn btn-danger">Logout</button>

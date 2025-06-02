@@ -3,13 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Siswa;
+use App\Models\Pembayaran;
 
 class SiswaController extends Controller
 {
     public function index()
     {
-        $maxMinggu = 10; // contoh jumlah minggu default
         $siswas = Siswa::with('pembayaran')->get();
-        return view('siswa.index', compact('siswas', 'maxMinggu'));
+        $maxMinggu = Pembayaran::max('minggu_ke') ?? 10;
+
+        return view('siswa', compact('siswas', 'maxMinggu'));
     }
 }
