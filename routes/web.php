@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 // Halaman siswa bisa diakses tanpa login
 Route::get('/siswa', [SiswaController::class, 'index'])->name('siswa.index');
 
+
 // Route untuk bendahara harus login
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -22,5 +23,5 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Redirect default ke siswa
 Route::get('/', function () {
-    return redirect()->route('siswa.index');
+    return redirect()->route('siswa');
 });

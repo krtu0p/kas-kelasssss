@@ -10,6 +10,6 @@ class SiswaController extends Controller
     {
         $maxMinggu = 10; // contoh jumlah minggu default
         $siswas = Siswa::with('pembayaran')->get();
-        return view('siswa.index', compact('siswas', 'maxMinggu'));
+        return view('siswa', compact('siswas', 'maxMinggu'));
     }
 }
