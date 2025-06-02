@@ -23,5 +23,5 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Redirect default ke siswa
 Route::get('/', function () {
-    return redirect()->route('siswa');
+    return redirect()->route('siswa.index');
 });
