@@ -30,7 +30,7 @@
                         <td>{{ $siswa->nama }}</td>
                         @for ($i = 1; $i <= $maxMinggu; $i++)
                             @php
-                                $status = $siswa->pembayaran->firstWhere('minggu_ke', $i)->status ?? false;
+                                $status = $siswa->pembayaran->firstWhere('minggu', $i)->status ?? false;
                             @endphp
                             <td>{!! $status ? '✅' : '❌' !!}</td>
                         @endfor

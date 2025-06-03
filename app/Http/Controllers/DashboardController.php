@@ -10,7 +10,7 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $maxMinggu = Pembayaran::max('minggu_ke') ?? 10;
+        $maxMinggu = Pembayaran::max('minggu') ?? 10;
         $siswas = Siswa::with('pembayaran')->get();
 
         return view('dashboard', compact('siswas', 'maxMinggu'));
@@ -19,14 +19,14 @@ class DashboardController extends Controller
     public function update(Request $request)
     {
         $data = $request->input('pembayaran');
-        $maxMinggu = Pembayaran::max('minggu_ke') ?? 10;
+        $maxMinggu = Pembayaran::max('minggu') ?? 10;
 
         foreach ($data as $siswa_id => $minggu) {
             for ($i = 1; $i <= $maxMinggu; $i++) {
                 $status = in_array($i, $minggu ?? []) ? true : false;
 
                 Pembayaran::updateOrCreate(
-                    ['siswa_id' => $siswa_id, 'minggu_ke' => $i],
+                    ['siswa_id' => $siswa_id, 'minggu' => $i],
                     ['status' => $status]
                 );
             }
@@ -37,14 +37,14 @@ class DashboardController extends Controller
 
     public function tambahMinggu()
     {
-        $max = Pembayaran::max('minggu_ke') ?? 0;
+        $max = Pembayaran::max('minggu') ?? 0;
         $next = $max + 1;
         $siswas = Siswa::all();
 
         foreach ($siswas as $s) {
             Pembayaran::firstOrCreate([
                 'siswa_id' => $s->id,
-                'minggu_ke' => $next,
+                'minggu' => $next,
             ]);
         }
 
@@ -53,11 +53,11 @@ class DashboardController extends Controller
     public function hapusMinggu()
     {
     // Ambil minggu terbesar
-    $maxMinggu = Pembayaran::max('minggu_ke');
+    $maxMinggu = Pembayaran::max('minggu');
 
     if ($maxMinggu) {
         // Hapus semua data pembayaran untuk minggu terakhir
-        Pembayaran::where('minggu_ke', $maxMinggu)->delete();
+        Pembayaran::where('minggu', $maxMinggu)->delete();
 
         return redirect()->back()->with('success', "Minggu ke-$maxMinggu berhasil dihapus.");
     }

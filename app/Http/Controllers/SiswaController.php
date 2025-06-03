@@ -10,7 +10,7 @@ class SiswaController extends Controller
     public function index()
     {
         $siswas = Siswa::with('pembayaran')->get();
-        $maxMinggu = Pembayaran::max('minggu_ke') ?? 10;
+        $maxMinggu = Pembayaran::max('minggu') ?? 10;
 
         return view('siswa', compact('siswas', 'maxMinggu'));
     }

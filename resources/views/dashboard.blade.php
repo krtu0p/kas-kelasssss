@@ -31,7 +31,7 @@
                             <td>{{ $siswa->nama }}</td>
                             @for ($i = 1; $i <= $maxMinggu; $i++)
                                 @php
-                                    $pembayaran = $siswa->pembayaran->firstWhere('minggu_ke', $i);
+                                    $pembayaran = $siswa->pembayaran->firstWhere('minggu', $i);
                                     $checked = $pembayaran && $pembayaran->status ? 'checked' : '';
                                 @endphp
                                 <td class="text-center">
