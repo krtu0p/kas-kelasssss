@@ -8,7 +8,7 @@ class Pembayaran extends Model
 {
     protected $table = 'pembayarans';
 
-    protected $fillable = ['siswa_id', 'minggu_ke', 'status'];
+    protected $fillable = ['siswa_id', 'minggu', 'status'];
 
     public function siswa()
     {
