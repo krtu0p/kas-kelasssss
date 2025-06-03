@@ -62,7 +62,7 @@ class DashboardController extends Controller
             return redirect()->back()->with('success', "Minggu ke-$maxMinggu berhasil dihapus.");
         }
 
-        return redirect()->back()->with('success', 'Tidak ada minggu yang bisa dihapus.');
+        return back()->with('error', 'Tidak ada minggu yang bisa dihapus.');
     }
 
 }
