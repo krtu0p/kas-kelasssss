@@ -11,8 +11,10 @@ class CreatePembayaransTable extends Migration
         Schema::create('pembayarans', function (Blueprint $table) {
             $table->id();
             $table->foreignId('siswa_id')->constrained()->onDelete('cascade');
-            $table->integer('minggu'); // minggu ke berapa dibayar, misal 1, 2, 3...
-            $table->boolean('status')->default(false); // true = sudah bayar
+            $table->string('bulan', 2); // '01', '02', ... '12'
+            $table->year('tahun');      // year like 2025
+            $table->integer('minggu');  // minggu keberapa
+            $table->boolean('status')->default(false); // sudah bayar atau belum
             $table->timestamps();
         });
     }

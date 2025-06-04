@@ -1,76 +1,156 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Bendahara</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .table-responsive { max-height: 500px; overflow-y: auto; }
+        .form-container { max-width: 600px; }
+    </style>
 </head>
 <body class="bg-light">
     <div class="container py-5">
         <h2 class="mb-4">Dashboard Pembayaran Kas Kelas</h2>
 
-        @if(session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
+        <!-- Flash Messages -->
+        @if (session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
         @endif
         @if (session('error'))
-    <div class="alert alert-danger">
-        {{ session('error') }}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
+        <!-- Form Pilih Bulan & Tahun -->
+<form method="GET" action="{{ route('dashboard') }}" class="mb-4 form-container d-flex gap-3 align-items-end">
+    <div class="flex-fill">
+        <label for="bulan" class="form-label">Pilih Bulan</label>
+        <select name="bulan" id="bulan" class="form-select" required>
+            @foreach ($dropdownBulan as $item)
+                <option value="{{ $item['bulan'] }}" {{ $item['bulan'] == $bulan ? 'selected' : '' }}>
+                    {{ $item['nama'] }}
+                </option>
+            @endforeach
+        </select>
     </div>
-@endif
-
-
-        <form method="POST" action="{{ route('pembayaran.update') }}">
+    <div class="flex-fill">
+        <label for="tahun" class="form-label">Tahun</label>
+        <select name="tahun" id="tahun" class="form-select" required>
+            @foreach ($dropdownBulan->pluck('tahun')->unique()->sortDesc() as $thn)
+                <option value="{{ $thn }}" {{ $thn == $tahun ? 'selected' : '' }}>{{ $thn }}</option>
+            @endforeach
+        </select>
+    </div>
+    <div>
+        <button type="submit" class="btn btn-primary">Lihat</button>
+    </div>
+</form>
+        <!-- Form Update Pembayaran -->
+        <form method="POST" action="{{ route('pembayaran.update') }}" class="mb-4">
             @csrf
+            <input type="hidden" name="bulan" value="{{ $bulan }}">
+            <input type="hidden" name="tahun" value="{{ $tahun }}">
 
-            <table class="table table-bordered">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Nama Siswa</th>
-                        @for ($i = 1; $i <= $maxMinggu; $i++)
-                            <th>M{{ $i }}</th>
-                        @endfor
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($siswas as $siswa)
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-dark">
                         <tr>
-                            <td>{{ $siswa->nama }}</td>
+                            <th scope="col">Nama Siswa</th>
                             @for ($i = 1; $i <= $maxMinggu; $i++)
-                                @php
-                                    $pembayaran = $siswa->pembayaran->firstWhere('minggu', $i);
-                                    $checked = $pembayaran && $pembayaran->status ? 'checked' : '';
-                                @endphp
-                                <td class="text-center">
-                                    <input type="checkbox" name="pembayaran[{{ $siswa->id }}][]" value="{{ $i }}" {{ $checked }} />
-                                </td>
+                                <th scope="col" class="text-center">M{{ $i }}</th>
                             @endfor
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
-
-            <button type="submit" class="btn btn-primary">Update Pembayaran</button>
+                    </thead>
+                    <tbody>
+                        @forelse ($siswas as $siswa)
+                            <tr>
+                                <td>{{ $siswa->nama }}</td>
+                                @for ($i = 1; $i <= $maxMinggu; $i++)
+                                    <td class="text-center">
+                                        <input type="checkbox" name="pembayaran[{{ $siswa->id }}][]" value="{{ $i }}"
+                                               {{ $siswa->pembayaran->firstWhere('minggu', $i)?->status ? 'checked' : '' }}>
+                                    </td>
+                                @endfor
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="{{ $maxMinggu + 1 }}" class="text-center">Tidak ada data siswa.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+            @if ($maxMinggu > 0)
+                <button type="submit" class="btn btn-primary">Update Pembayaran</button>
+            @endif
         </form>
 
-        <form method="POST" action="{{ route('pembayaran.tambah_minggu') }}" class="mt-3">
+        <!-- Tambah/Hapus Minggu -->
+        <div class="d-flex gap-2 mb-4">
+            <form method="POST" action="{{ route('pembayaran.tambah_minggu') }}" class="d-inline">
+                @csrf
+                <input type="hidden" name="bulan" value="{{ $bulan }}">
+                <input type="hidden" name="tahun" value="{{ $tahun }}">
+                <button type="submit" class="btn btn-success">Tambah Minggu</button>
+            </form>
+            @if ($maxMinggu > 1)
+                <form method="POST" action="{{ route('pembayaran.hapus_minggu') }}" class="d-inline">
+                    @csrf
+                    <input type="hidden" name="bulan" value="{{ $bulan }}">
+                    <input type="hidden" name="tahun" value="{{ $tahun }}">
+                    <button type="submit" class="btn btn-warning">Hapus Minggu Terakhir (M{{ $maxMinggu }})</button>
+                </form>
+            @endif
+        </div>
+
+        <!-- Form Tambah Bulan Baru -->
+        <form action="{{ route('dashboard.tambahBulan') }}" method="POST" class="mb-4 form-container d-flex gap-3 align-items-end">
             @csrf
-            <button type="submit" class="btn btn-success">Tambah Minggu</button>
+            <div class="flex-fill">
+                <label for="bulanBaru" class="form-label">Tambah Bulan Baru</label>
+                <select name="bulan" id="bulanBaru" class="form-select" required>
+                    @foreach ($bulanIndo as $blnKey => $blnNama)
+                        <option value="{{ $blnKey }}">{{ $blnNama }}</option>
+                    @endforeach
+                </select>
+                @error('bulan')
+                    <div class="text-danger mt-1">{{ $message }}</div>
+                @enderror
+            </div>
+            <div class="flex-fill">
+                <label for="tahunBaru" class="form-label">Tahun</label>
+                <select name="tahun" id="tahunBaru" class="form-select" required>
+                    @for ($y = now()->year - 5; $y <= now()->year + 5; $y++)
+                        <option value="{{ $y }}" {{ $y == $tahun ? 'selected' : '' }}>{{ $y }}</option>
+                    @endfor
+                </select>
+                @error('tahun')
+                    <div class="text-danger mt-1">{{ $message }}</div>
+                @enderror
+            </div>
+            <div>
+                <button type="submit" class="btn btn-primary">Tambah Bulan Baru</button>
+            </div>
         </form>
 
-        <form method="POST" action="{{ route('pembayaran.hapus_minggu') }}" class="mt-3">
-    @csrf
-    <button type="submit" class="btn btn-warning">Hapus Minggu Terakhir (M{{ $maxMinggu }})</button>
-</form>
-
-
-        <form method="POST" action="{{ route('logout') }}" class="mt-3">
+        <!-- Logout -->
+        <form method="POST" action="{{ route('logout') }}" class="mb-4">
             @csrf
             <button type="submit" class="btn btn-danger">Logout</button>
         </form>
 
-        <div class="mt-4 text-center">
+        <div class="text-center">
             <a href="{{ route('siswa.index') }}" class="btn btn-secondary">Lihat Halaman Siswa</a>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
