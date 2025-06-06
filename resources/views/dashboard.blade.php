@@ -29,29 +29,30 @@
         @endif
 
         <!-- Form Pilih Bulan & Tahun -->
-<form method="GET" action="{{ route('dashboard') }}" class="mb-4 form-container d-flex gap-3 align-items-end">
-    <div class="flex-fill">
-        <label for="bulan" class="form-label">Pilih Bulan</label>
-        <select name="bulan" id="bulan" class="form-select" required>
-            @foreach ($dropdownBulan as $item)
-                <option value="{{ $item['bulan'] }}" {{ $item['bulan'] == $bulan ? 'selected' : '' }}>
-                    {{ $item['nama'] }}
-                </option>
-            @endforeach
-        </select>
-    </div>
-    <div class="flex-fill">
-        <label for="tahun" class="form-label">Tahun</label>
-        <select name="tahun" id="tahun" class="form-select" required>
-            @foreach ($dropdownBulan->pluck('tahun')->unique()->sortDesc() as $thn)
-                <option value="{{ $thn }}" {{ $thn == $tahun ? 'selected' : '' }}>{{ $thn }}</option>
-            @endforeach
-        </select>
-    </div>
-    <div>
-        <button type="submit" class="btn btn-primary">Lihat</button>
-    </div>
-</form>
+        <form method="GET" action="{{ route('dashboard') }}" class="mb-4 form-container d-flex gap-3 align-items-end">
+            <div class="flex-fill">
+                <label for="bulan" class="form-label">Pilih Bulan</label>
+                <select name="bulan" id="bulan" class="form-select" required>
+                    @foreach ($dropdownBulan as $item)
+                        <option value="{{ $item['bulan'] }}" {{ $item['bulan'] == $bulan ? 'selected' : '' }}>
+                            {{ $item['nama'] }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="flex-fill">
+                <label for="tahun" class="form-label">Tahun</label>
+                <select name="tahun" id="tahun" class="form-select" required>
+                    @foreach ($dropdownBulan->pluck('tahun')->unique()->sortDesc() as $thn)
+                        <option value="{{ $thn }}" {{ $thn == $tahun ? 'selected' : '' }}>{{ $thn }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
+                <button type="submit" class="btn btn-primary">Lihat</button>
+            </div>
+        </form>
+
         <!-- Form Update Pembayaran -->
         <form method="POST" action="{{ route('pembayaran.update') }}" class="mb-4">
             @csrf
@@ -146,8 +147,11 @@
             <button type="submit" class="btn btn-danger">Logout</button>
         </form>
 
+        <!-- Navigation Buttons -->
         <div class="text-center">
             <a href="{{ route('siswa.index') }}" class="btn btn-secondary">Lihat Halaman Siswa</a>
+            <a href="{{ route('pemasukan') }}" class="btn btn-success mx-2">Pemasukan</a>
+            <a href="{{ route('pengeluaran') }}" class="btn btn-danger">Pengeluaran</a>
         </div>
     </div>
 
