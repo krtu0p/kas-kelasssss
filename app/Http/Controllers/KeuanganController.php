@@ -29,23 +29,31 @@ class KeuanganController extends Controller
 
         $totalPengeluaran = $pengeluaran->sum('jumlah');
 
-        $dropdownBulan = Pengeluaran::select('bulan', 'tahun')
+        // Fetch distinct months with data for the selected year
+        $dropdownBulan = Pengeluaran::select('bulan')
             ->distinct()
-            ->orderByDesc('tahun')
-            ->orderByDesc('bulan')
-            ->get()
-            ->map(fn($item) => [
-                'bulan' => $item->bulan,
-                'tahun' => $item->tahun,
-                'nama' => $this->bulanIndo[$item->bulan] . ' ' . $item->tahun,
-            ]);
+            ->where('tahun', $tahun)
+            ->pluck('bulan')
+            ->mapWithKeys(function ($bulan) {
+                return [$bulan => $this->bulanIndo[$bulan]];
+            });
 
-        if ($dropdownBulan->isEmpty()) {
-            $dropdownBulan->push([
-                'bulan' => Carbon::now()->format('m'),
-                'tahun' => Carbon::now()->year,
-                'nama' => $this->bulanIndo[Carbon::now()->format('m')] . ' ' . Carbon::now()->year,
-            ]);
+        // Fetch distinct years with data
+        $yearRange = Pengeluaran::select('tahun')
+            ->distinct()
+            ->orderBy('tahun', 'asc')
+            ->pluck('tahun')
+            ->toArray();
+
+        // If no years with data, default to current year
+        if (empty($yearRange)) {
+            $yearRange = [Carbon::now()->year];
+        }
+
+        // If no data for the selected year, set a default month (e.g., current month) if no selection
+        if ($dropdownBulan->isEmpty() && !$request->has('bulan')) {
+            $bulan = Carbon::now()->format('m');
+            $dropdownBulan = collect([$bulan => $this->bulanIndo[$bulan]]);
         }
 
         return view('pengeluaran', [
@@ -54,6 +62,7 @@ class KeuanganController extends Controller
             'bulan' => $bulan,
             'tahun' => $tahun,
             'dropdownBulan' => $dropdownBulan,
+            'yearRange' => $yearRange,
             'bulanIndo' => $this->bulanIndo,
         ]);
     }
@@ -100,6 +109,10 @@ class KeuanganController extends Controller
 
     public function pengeluaranUpdate(Request $request, $id)
     {
+        \Log::info('pengeluaranUpdate called with data: ', $request->all());
+
+        $pengeluaran = Pengeluaran::findOrFail($id);
+
         $request->validate([
             'nama' => 'required|string|max:255',
             'jumlah' => 'required|numeric|min:0',
@@ -109,7 +122,7 @@ class KeuanganController extends Controller
         ]);
 
         try {
-            $pengeluaran = Pengeluaran::findOrFail($id);
+            \Log::info('Validation passed, updating Pengeluaran record');
             $pengeluaran->update([
                 'nama' => $request->nama,
                 'jumlah' => $request->jumlah,
@@ -118,10 +131,11 @@ class KeuanganController extends Controller
                 'tahun' => $request->tahun,
             ]);
 
+            \Log::info('Record updated with ID: ' . $pengeluaran->id);
             return redirect()->route('pengeluaran')->with('success', 'Pengeluaran berhasil diperbarui!');
         } catch (\Exception $e) {
-            Log::error('Pengeluaran update failed: ' . $e->getMessage());
-            return back()->with('error', 'Gagal memperbarui pengeluaran.');
+            \Log::error('Pengeluaran update failed: ' . $e->getMessage());
+            return back()->with('error', 'Gagal memperbarui pengeluaran. Error: ' . $e->getMessage())->withInput();
         }
     }
 
@@ -150,23 +164,31 @@ class KeuanganController extends Controller
 
         $totalPemasukan = $pemasukan->sum('jumlah');
 
-        $dropdownBulan = Pemasukan::select('bulan', 'tahun')
+        // Fetch distinct months with data for the selected year
+        $dropdownBulan = Pemasukan::select('bulan')
             ->distinct()
-            ->orderByDesc('tahun')
-            ->orderByDesc('bulan')
-            ->get()
-            ->map(fn($item) => [
-                'bulan' => $item->bulan,
-                'tahun' => $item->tahun,
-                'nama' => $this->bulanIndo[$item->bulan] . ' ' . $item->tahun,
-            ]);
+            ->where('tahun', $tahun)
+            ->pluck('bulan')
+            ->mapWithKeys(function ($bulan) {
+                return [$bulan => $this->bulanIndo[$bulan]];
+            });
 
-        if ($dropdownBulan->isEmpty()) {
-            $dropdownBulan->push([
-                'bulan' => Carbon::now()->format('m'),
-                'tahun' => Carbon::now()->year,
-                'nama' => $this->bulanIndo[Carbon::now()->format('m')] . ' ' . Carbon::now()->year,
-            ]);
+        // Fetch distinct years with data
+        $yearRange = Pemasukan::select('tahun')
+            ->distinct()
+            ->orderBy('tahun', 'asc')
+            ->pluck('tahun')
+            ->toArray();
+
+        // If no years with data, default to current year
+        if (empty($yearRange)) {
+            $yearRange = [Carbon::now()->year];
+        }
+
+        // If no data for the selected year, set a default month (e.g., current month) if no selection
+        if ($dropdownBulan->isEmpty() && !$request->has('bulan')) {
+            $bulan = Carbon::now()->format('m');
+            $dropdownBulan = collect([$bulan => $this->bulanIndo[$bulan]]);
         }
 
         return view('pemasukan', [
@@ -175,6 +197,7 @@ class KeuanganController extends Controller
             'bulan' => $bulan,
             'tahun' => $tahun,
             'dropdownBulan' => $dropdownBulan,
+            'yearRange' => $yearRange,
             'bulanIndo' => $this->bulanIndo,
         ]);
     }
@@ -186,6 +209,8 @@ class KeuanganController extends Controller
 
     public function pemasukanStore(Request $request)
     {
+        \Log::info('pemasukanStore called with data: ', $request->all());
+
         $request->validate([
             'nama' => 'required|string|max:255',
             'jumlah' => 'required|numeric|min:0',
@@ -195,7 +220,8 @@ class KeuanganController extends Controller
         ]);
 
         try {
-            Pemasukan::create([
+            \Log::info('Validation passed, creating Pemasukan record');
+            $pemasukan = Pemasukan::create([
                 'nama' => $request->nama,
                 'jumlah' => $request->jumlah,
                 'tanggal' => $request->tanggal,
@@ -203,10 +229,11 @@ class KeuanganController extends Controller
                 'tahun' => $request->tahun,
             ]);
 
+            \Log::info('Record created with ID: ' . $pemasukan->id);
             return redirect()->route('pemasukan')->with('success', 'Pemasukan berhasil ditambahkan!');
         } catch (\Exception $e) {
-            Log::error('Pemasukan store failed: ' . $e->getMessage());
-            return back()->with('error', 'Gagal menambahkan pemasukan.');
+            \Log::error('Pemasukan store failed: ' . $e->getMessage());
+            return back()->with('error', 'Gagal menambahkan pemasukan. Error: ' . $e->getMessage())->withInput();
         }
     }
 
@@ -221,6 +248,10 @@ class KeuanganController extends Controller
 
     public function pemasukanUpdate(Request $request, $id)
     {
+        \Log::info('pemasukanUpdate called with data: ', $request->all());
+
+        $pemasukan = Pemasukan::findOrFail($id);
+
         $request->validate([
             'nama' => 'required|string|max:255',
             'jumlah' => 'required|numeric|min:0',
@@ -230,7 +261,7 @@ class KeuanganController extends Controller
         ]);
 
         try {
-            $pemasukan = Pemasukan::findOrFail($id);
+            \Log::info('Validation passed, updating Pemasukan record');
             $pemasukan->update([
                 'nama' => $request->nama,
                 'jumlah' => $request->jumlah,
@@ -239,10 +270,11 @@ class KeuanganController extends Controller
                 'tahun' => $request->tahun,
             ]);
 
+            \Log::info('Record updated with ID: ' . $pemasukan->id);
             return redirect()->route('pemasukan')->with('success', 'Pemasukan berhasil diperbarui!');
         } catch (\Exception $e) {
-            Log::error('Pemasukan update failed: ' . $e->getMessage());
-            return back()->with('error', 'Gagal memperbarui pemasukan.');
+            \Log::error('Pemasukan update failed: ' . $e->getMessage());
+            return back()->with('error', 'Gagal memperbarui pemasukan. Error: ' . $e->getMessage())->withInput();
         }
     }
 

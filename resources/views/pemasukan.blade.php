@@ -8,10 +8,6 @@
     <style>
         .table-responsive { max-height: 500px; overflow-y: auto; }
         .form-container { max-width: 600px; }
-        .card-total { background-color: #ffd700; color: black; padding: 15px; border-radius: 10px; }
-        .btn-tambah { background-color: #4CAF50; color: white; }
-        .btn-edit { background-color: #2196F3; color: white; }
-        .btn-hapus { background-color: #f44336; color: white; }
     </style>
 </head>
 <body class="bg-light">
@@ -36,69 +32,69 @@
         <form method="GET" action="{{ route('pemasukan') }}" class="mb-4 form-container d-flex gap-3 align-items-end">
             <div class="flex-fill">
                 <label for="bulan" class="form-label">Pilih Bulan</label>
-                <select name="bulan" id="bulan" class="form-select" required>
-                    @foreach ($dropdownBulan as $item)
-                        <option value="{{ $item['bulan'] }}" {{ $item['bulan'] == $bulan ? 'selected' : '' }}>
-                            {{ $item['nama'] }}
-                        </option>
-                    @endforeach
+                <select name="bulan" id="bulan" class="form-select" required @if ($dropdownBulan->isEmpty()) disabled @endif>
+                    @if ($dropdownBulan->isEmpty())
+                        <option value="">Tidak ada data untuk tahun ini</option>
+                    @else
+                        @foreach ($dropdownBulan as $key => $value)
+                            <option value="{{ $key }}" {{ $key == $bulan ? 'selected' : '' }}>
+                                {{ $value }}
+                            </option>
+                        @endforeach
+                    @endif
                 </select>
             </div>
             <div class="flex-fill">
                 <label for="tahun" class="form-label">Tahun</label>
-                <select name="tahun" id="tahun" class="form-select" required>
-                    @foreach ($dropdownBulan->pluck('tahun')->unique()->sortDesc() as $thn)
-                        <option value="{{ $thn }}" {{ $thn == $tahun ? 'selected' : '' }}>{{ $thn }}</option>
+                <select name="tahun" id="tahun" class="form-select" required onchange="this.form.submit()">
+                    @foreach ($yearRange as $year)
+                        <option value="{{ $year }}" {{ $year == $tahun ? 'selected' : '' }}>{{ $year }}</option>
                     @endforeach
                 </select>
             </div>
             <div>
-                <button type="submit" class="btn btn-primary">Lihat</button>
+                <button type="submit" class="btn btn-primary" @if ($dropdownBulan->isEmpty()) disabled @endif>Lihat</button>
             </div>
         </form>
 
-        <!-- Total Pemasukan -->
-        <div class="card-total mb-4 d-flex justify-content-between align-items-center">
-            <div>
-                <h5>Total Kas</h5>
-                <h3>Rp. {{ number_format($totalPemasukan, 0, ',', '.') }}</h3>
-            </div>
-            <span class="material-icons">money</span>
-        </div>
-
-        <!-- List Pemasukan -->
-        <div class="row">
-            @forelse ($pemasukan as $item)
-                <div class="col-md-6 mb-3">
-                    <div class="card p-3 bg-dark text-white">
-                        <div class="d-flex justify-content-between">
-                            <div>
-                                <h5>{{ $item->nama }}</h5>
-                                <small>Rp. {{ number_format($item->jumlah, 0, ',', '.') }}</small>
-                                <p>{{ $item->tanggal->format('d/m/Y') }}</p>
-                            </div>
-                            <div>
-                                <a href="{{ route('pemasukan.edit', $item->id) }}" class="btn btn-edit btn-sm me-2">✏️</a>
+        <!-- Table or Other Content -->
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Nama</th>
+                        <th>Jumlah</th>
+                        <th>Tanggal</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($pemasukan as $item)
+                        <tr>
+                            <td>{{ $item->nama }}</td>
+                            <td>{{ number_format($item->jumlah, 2) }}</td>
+                            <td>{{ $item->tanggal->format('d-m-Y') }}</td>
+                            <td>
+                                <a href="{{ route('pemasukan.edit', $item->id) }}" class="btn btn-warning btn-sm">Edit</a>
                                 <form action="{{ route('pemasukan.destroy', $item->id) }}" method="POST" style="display:inline;">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-hapus btn-sm" onclick="return confirm('Yakin ingin menghapus?')">🗑️</button>
+                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin menghapus?')">Hapus</button>
                                 </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            @empty
-                <div class="text-center">Tidak ada data pemasukan untuk bulan ini.</div>
-            @endforelse
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="4" class="text-center">Tidak ada data pemasukan.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
-
-        <!-- Tambah Pemasukan -->
-        <div class="mt-4">
-            <a href="{{ route('pemasukan.create') }}" class="btn btn-tambah">Tambah</a>
+        <div class="mt-3">
+            <p>Total Pemasukan: {{ number_format($totalPemasukan, 2) }} Rp</p>
         </div>
-
-        <!-- Kembali ke Dashboard -->
+        <a href="{{ route('pemasukan.create') }}" class="btn btn-success mt-3">Tambah Pemasukan</a>
         <div class="mt-4">
             <a href="{{ route('dashboard') }}" class="btn btn-primary">Kembali ke Dashboard</a>
         </div>

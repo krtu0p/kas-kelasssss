@@ -33,29 +33,33 @@
             </div>
             <div class="mb-3">
                 <label for="tanggal" class="form-label">Tanggal</label>
-                <input type="date" name="tanggal" id="tanggal" class="form-control" value="{{ old('tanggal', $pengeluaran->tanggal) }}" required>
+                <input type="date" name="tanggal" id="tanggal" class="form-control" value="{{ old('tanggal', $pengeluaran->tanggal->format('Y-m-d')) }}" required onchange="updateMonthYear()">
             </div>
-            <div class="mb-3">
-                <label for="bulan" class="form-label">Bulan</label>
-                <select name="bulan" id="bulan" class="form-select" required>
-                    @foreach ($bulanIndo as $key => $value)
-                        <option value="{{ $key }}" {{ old('bulan', $pengeluaran->bulan) == $key ? 'selected' : '' }}>{{ $value }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="mb-3">
-                <label for="tahun" class="form-label">Tahun</label>
-                <select name="tahun" id="tahun" class="form-select" required>
-                    @for ($y = now()->year - 5; $y <= now()->year + 5; $y++)
-                        <option value="{{ $y }}" {{ old('tahun', $pengeluaran->tahun) == $y ? 'selected' : '' }}>{{ $y }}</option>
-                    @endfor
-                </select>
-            </div>
+            <input type="hidden" name="bulan" id="bulan_hidden">
+            <input type="hidden" name="tahun" id="tahun_hidden">
             <button type="submit" class="btn btn-primary">Update</button>
             <a href="{{ route('pengeluaran') }}" class="btn btn-secondary">Batal</a>
         </form>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function updateMonthYear() {
+            const tanggalInput = document.getElementById('tanggal').value;
+            if (tanggalInput) {
+                const date = new Date(tanggalInput);
+                const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+                const year = date.getFullYear();
+
+                document.getElementById('bulan_hidden').value = month;
+                document.getElementById('tahun_hidden').value = year;
+            }
+        }
+
+        // Trigger update on page load with the initial date
+        window.onload = function() {
+            updateMonthYear();
+        };
+    </script>
 </body>
 </html>
