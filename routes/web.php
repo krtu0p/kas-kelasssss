@@ -5,9 +5,12 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\KeuanganController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ChartController;
 
 // Halaman siswa bisa diakses tanpa login
 Route::get('/siswa', [SiswaController::class, 'index'])->name('siswa.index');
+
+Route::get('/chart-keuangan', [KeuanganController::class, 'keuanganChart'])->name('keuangan.chart');
 
 // Route untuk bendahara harus login
 Route::middleware('auth')->group(function () {

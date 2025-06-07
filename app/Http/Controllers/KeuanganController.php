@@ -290,4 +290,52 @@ class KeuanganController extends Controller
             return back()->with('error', 'Gagal menghapus pemasukan.');
         }
     }
+
+    public function keuanganChart()
+{
+    $data = [];
+
+    // Ambil seluruh bulan & tahun yang ada di pemasukan dan pengeluaran
+    $bulanTahun = collect(
+        Pemasukan::select('bulan', 'tahun')->distinct()->get()
+    )->merge(
+        Pengeluaran::select('bulan', 'tahun')->distinct()->get()
+    )->unique(function ($item) {
+        return $item['bulan'] . '-' . $item['tahun'];
+    })->sortBy(function ($item) {
+        return $item['tahun'] . '-' . $item['bulan'];
+    });
+
+    $labels = [];
+    $pemasukanData = [];
+    $pengeluaranData = [];
+    $totalKasData = [];
+
+    $kasBerjalan = 0;
+
+    foreach ($bulanTahun as $bt) {
+        $bulan = $bt['bulan'];
+        $tahun = $bt['tahun'];
+
+        $label = $this->bulanIndo[$bulan] . ' ' . $tahun;
+        $labels[] = $label;
+
+        $pemasukan = Pemasukan::where('bulan', $bulan)->where('tahun', $tahun)->sum('jumlah');
+        $pengeluaran = Pengeluaran::where('bulan', $bulan)->where('tahun', $tahun)->sum('jumlah');
+
+        $kasBerjalan += $pemasukan - $pengeluaran;
+
+        $pemasukanData[] = $pemasukan;
+        $pengeluaranData[] = $pengeluaran;
+        $totalKasData[] = $kasBerjalan;
+    }
+
+    return view('keuangan_chart', [
+        'labels' => $labels,
+        'pemasukanData' => $pemasukanData,
+        'pengeluaranData' => $pengeluaranData,
+        'totalKasData' => $totalKasData,
+    ]);
+}
+
 }

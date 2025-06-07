@@ -92,7 +92,7 @@
             </table>
         </div>
         <div class="mt-3">
-            <p>Total Pengeluaran: {{ number_format($totalPengeluaran, 2) }} Rp</p>
+            <p>Total Pengeluaran: Rp. {{ number_format($totalPengeluaran, 2) }}</p>
         </div>
         <a href="{{ route('pengeluaran.create') }}" class="btn btn-success mt-3">Tambah Pengeluaran</a>
         <div class="mt-4">
