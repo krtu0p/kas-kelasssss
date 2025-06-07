@@ -10,8 +10,6 @@ use App\Http\Controllers\ChartController;
 // Halaman siswa bisa diakses tanpa login
 Route::get('/siswa', [SiswaController::class, 'index'])->name('siswa.index');
 
-Route::get('/chart-keuangan', [KeuanganController::class, 'keuanganChart'])->name('keuangan.chart');
-
 // Route untuk bendahara harus login
 Route::middleware('auth')->group(function () {
     // Dashboard dan manajemen pembayaran
@@ -36,6 +34,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/pemasukan/{id}/edit', [KeuanganController::class, 'pemasukanEdit'])->name('pemasukan.edit');
     Route::put('/pemasukan/{id}', [KeuanganController::class, 'pemasukanUpdate'])->name('pemasukan.update');
     Route::delete('/pemasukan/{id}', [KeuanganController::class, 'pemasukanDestroy'])->name('pemasukan.destroy');
+
+    // Chart Keuangan
+    Route::get('/chart-keuangan', [KeuanganController::class, 'keuanganChart'])->name('keuangan.chart');
 });
 
 // Login dan logout untuk bendahara
