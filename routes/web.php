@@ -36,7 +36,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/pemasukan/{id}', [KeuanganController::class, 'pemasukanDestroy'])->name('pemasukan.destroy');
 
     // Chart Keuangan
-    Route::get('/chart-keuangan', [KeuanganController::class, 'keuanganChart'])->name('keuangan.chart');
+    Route::get('/chart', [ChartController::class, 'index'])->name('chart.index');
 });
 
 // Login dan logout untuk bendahara

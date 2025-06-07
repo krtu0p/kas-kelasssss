@@ -4,27 +4,34 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Pemasukan;
+use App\Models\Pengeluaran;
 use Carbon\Carbon;
 
 class ChartController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $data = Pemasukan::selectRaw("DATE_FORMAT(tanggal, '%Y-%m') as bulan, SUM(jumlah) as total")
-    ->groupByRaw("DATE_FORMAT(tanggal, '%Y-%m')")
-    ->orderByRaw("DATE_FORMAT(tanggal, '%Y-%m')")
-    ->get();
+        // Ambil bulan & tahun dari request, default ke bulan & tahun sekarang
+        $bulan = $request->input('bulan', date('m'));
+        $tahun = $request->input('tahun', date('Y'));
 
+        // Ambil data pemasukan dan pengeluaran untuk bulan & tahun tertentu
+        $pemasukan = Pemasukan::where('bulan', $bulan)->where('tahun', $tahun)->get();
+        $pengeluaran = Pengeluaran::where('bulan', $bulan)->where('tahun', $tahun)->get();
 
-        $labels = $data->pluck('bulan')->map(function ($bulan) {
-            return Carbon::createFromFormat('Y-m', $bulan)->translatedFormat('F Y');
-        });
+        // Hitung total
+        $totalPemasukan = $pemasukan->sum('jumlah');
+        $totalPengeluaran = $pengeluaran->sum('jumlah');
+        $totalKas = $totalPemasukan - $totalPengeluaran;
 
-        $values = $data->pluck('total');
-
+        // Kirimkan ke view dalam bentuk satu titik data (untuk bar chart vertikal 1 bulan)
         return view('chart', [
-            'labels' => $labels,
-            'values' => $values,
+            'labels' => ['Pemasukan', 'Pengeluaran', 'Total Kas'],
+            'pemasukanData' => [$totalPemasukan],
+            'pengeluaranData' => [$totalPengeluaran],
+            'totalKasData' => [$totalKas],
+            'selectedBulan' => $bulan,
+            'selectedTahun' => $tahun,
         ]);
     }
 }
