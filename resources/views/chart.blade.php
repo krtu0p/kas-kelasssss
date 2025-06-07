@@ -93,25 +93,27 @@
         }
 
         .sidebar {
-            width: 380px;
-            background: white;
-            border-radius: 1.5rem;
-            padding: 1rem;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+    width: 380px;
+    height: 700px; /* ✅ Tambahkan tinggi sidebar */
+    background: white;
+    border-radius: 1.5rem;
+    padding: 1.5rem;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 
-        .chart-container {
-            width: 100%;
-            height: 100%;
-        }
+.chart-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
 
-        canvas {
-            max-width: 100%;
-            height: 300px !important;
-        }
+canvas {
+    max-width: 100%;
+    height: 100% !important; /* ✅ Lebihkan tinggi canvas */
+}
     </style>
 </head>
 <body>
@@ -182,9 +184,9 @@
                 {
                     label: 'Jumlah',
                     backgroundColor: [
-                        'rgba(75, 192, 192, 0.7)',
-                        'rgba(255, 99, 132, 0.7)',
-                        'rgba(153, 102, 255, 0.7)'
+                        'rgb(23, 255, 147)',
+                        'rgb(255, 40, 40)',
+                        'rgba(140, 82, 255, 0.7)'
                     ],
                     data: [
                         @json($pemasukanData[0]),
