@@ -93,7 +93,7 @@
         }
 
         .sidebar {
-            width: 300px;
+            width: 380px;
             background: white;
             border-radius: 1.5rem;
             padding: 1rem;
