@@ -128,7 +128,7 @@
                     </div>
                     <form action="{{ route('dashboard.tambahBulan') }}" method="POST">
                         @csrf
-                        <div class="modal-body bg-light">
+                        <div class="modal-body      bg-light">
                             <div class="mb-3">
                                 <label for="bulanBaru" class="form-label">Pilih Bulan</label>
                                 <select name="bulan" id="bulanBaru" class="form-select" required>
