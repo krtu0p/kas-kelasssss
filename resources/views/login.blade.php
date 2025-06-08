@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login Responsif dengan Validasi</title>
+    <title>Login</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
-    
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
     
     <style>
@@ -107,13 +107,13 @@
             padding: 14px;
             margin-top: 16px;
             border: none;
-            border-radius: 9999px;
+            border-radius: 99px;
             color: #fff;
             font-size: 16px;
             font-weight: 600;
             font-family: 'Montserrat', sans-serif;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.4s ease;
         }
         .btn:hover {
             transform: scale(1.05);
@@ -151,11 +151,21 @@
             display: block;
         }
         @media (max-width: 480px) {
-            .login-container { padding: 25px; }
-            .login-icon img { width: 60px; }
-            .login-title { font-size: 28px; margin-bottom: 24px; }
-            .form-control { padding: 12px 40px; font-size: 15px; }
-            .btn { padding: 12px; font-size: 15px; }
+            .login-container { 
+                padding: 25px; 
+            }
+            .login-icon img { 
+                width: 60px; 
+            }
+            .login-title { 
+                font-size: 28px; margin-bottom: 24px; 
+            }
+            .form-control { 
+                padding: 12px 40px; font-size: 15px; 
+            }
+            .btn { 
+                padding: 12px; font-size: 15px; 
+            }
         }
     </style>
 </head>
@@ -165,7 +175,7 @@
         <div class="login-icon">
             <img src="//lms.skensa.id/pluginfile.php/1/theme_moove/logo/1749082852/logo-lms-2.png" class="logo" alt="LMS-SKENSA">
         </div>
-        <h1 class="login-title">Login</h1>
+        <h1 class="login-title">Log In</h1>
 
         <form method="POST" action="{{ route('login.process') }}" class="login-form" id="loginForm">
             @csrf
@@ -192,7 +202,7 @@
         </form>
 
         <a href="{{ route('siswa.index') }}" class="student-link">
-            <button type="button" class="btn btn-student">Log in as Siswa</button>
+            <button type="button" class="btn btn-student" id="loginSiswaButton">Log in as Siswa</button>
         </a>
     </div>
 
@@ -202,6 +212,7 @@
         const email = document.getElementById('email');
         const password = document.getElementById('password');
         const loginButton = document.getElementById('loginButton');
+        const loginSiswaButton = document.getElementById('loginSiswaButton');
         const togglePassword = document.getElementById('togglePassword');
         
         const emailError = document.getElementById('emailError');
@@ -219,6 +230,12 @@
         email.addEventListener('input', validateEmail);
         password.addEventListener('input', validatePassword);
 
+        // Buat nampilin spinner biar makin keren
+        function showSpinner(button, loadingText = "Memuat...") {
+            button.disabled = true;
+            button.innerHTML = `${loadingText} <i class="fas fa-spinner fa-spin"></i>`;
+        }
+
         // --- Logika Pengiriman Form ---
         form.addEventListener('submit', function(event) {
             event.preventDefault(); 
@@ -226,20 +243,20 @@
             const isFormValid = validateForm();
 
             if (isFormValid) {
-                loginButton.disabled = true;
-                loginButton.innerHTML = 'Mengirim... <i class="fas fa-spinner fa-spin"></i>';
-
+                // Panggil fungsi spinner untuk tombol login bendahara
+                showSpinner(loginButton, "Log In as Bendahara")
+                
+                // Setelah jeda, kirim form. Tombol akan tetap disabled karena halaman akan berpindah.
                 setTimeout(() => {
-                    // Di aplikasi nyata, baris di bawah ini akan mengirimkan form ke server.
-                    form.submit(); 
-                    
-                    // Untuk demonstrasi, kita hanya akan menampilkan pesan.
-                    // alert('Simulasi: Form berhasil divalidasi dan siap dikirim!'); 
-                    
-                    loginButton.disabled = false;
-                    loginButton.innerHTML = 'Log In as Bendahara';
-                }, 1000);
+                    form.submit();  
+                }, 500);
             }
+        });
+
+        // --- Event listener untuk Tombol Siswa ---
+        loginSiswaButton.addEventListener('click', function(event) {
+            // Panggil fungsi spinner untuk tombol login siswa
+            showSpinner(loginSiswaButton, "Log in as Siswa");
         });
 
         // --- Fungsi Validasi Modular ---
