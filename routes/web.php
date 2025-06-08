@@ -37,6 +37,9 @@ Route::middleware('auth')->group(function () {
 
     // Chart Keuangan
     Route::get('/chart', [ChartController::class, 'index'])->name('chart.index');
+
+    //Utang
+    Route::get('/utang', [KeuanganController::class, 'utang'])->name('utang');
 });
 
 // Login dan logout untuk bendahara
