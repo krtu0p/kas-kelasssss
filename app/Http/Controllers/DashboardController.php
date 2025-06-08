@@ -92,42 +92,44 @@ class DashboardController extends Controller
     }
 
     public function tambahMinggu(Request $request)
-    {
-        $request->validate([
-            'bulan' => 'required|digits:2',
-            'tahun' => 'required|digits:4',
-        ]);
+{
+    $request->validate([
+        'bulan' => 'required|digits:2',
+        'tahun' => 'required|digits:4',
+    ]);
 
-        $bulan = $request->input('bulan');
-        $tahun = $request->input('tahun');
+    $bulan = $request->input('bulan');
+    $tahun = $request->input('tahun');
 
-        try {
-            DB::transaction(function () use ($bulan, $tahun) {
-                $maxMinggu = Pembayaran::where('bulan', $bulan)
-                    ->where('tahun', $tahun)
-                    ->max('minggu') ?? 0;
-                $nextMinggu = $maxMinggu + 1;
+    try {
+        $maxMinggu = Pembayaran::where('bulan', $bulan)
+            ->where('tahun', $tahun)
+            ->max('minggu') ?? 0;
 
-                $siswas = Siswa::pluck('id');
-                $insertData = $siswas->map(fn($siswa_id) => [
-                    'siswa_id' => $siswa_id,
-                    'minggu' => $nextMinggu,
-                    'bulan' => $bulan,
-                    'tahun' => $tahun,
-                    'status' => false,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ])->toArray();
+        $nextMinggu = $maxMinggu + 1;
 
-                Pembayaran::insert($insertData);
-            });
+        DB::transaction(function () use ($bulan, $tahun, $nextMinggu) {
+            $siswas = Siswa::pluck('id');
+            $insertData = $siswas->map(fn($siswa_id) => [
+                'siswa_id' => $siswa_id,
+                'minggu' => $nextMinggu,
+                'bulan' => $bulan,
+                'tahun' => $tahun,
+                'status' => false,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ])->toArray();
 
-            return back()->with('success', "Minggu ke-$nextMinggu untuk bulan {$this->bulanIndo[$bulan]} $tahun berhasil ditambahkan!");
-        } catch (\Exception $e) {
-            Log::error('Tambah minggu failed: ' . $e->getMessage());
-            return back()->with('error', 'Gagal menambah minggu.');
-        }
+            Pembayaran::insert($insertData);
+        });
+
+        return redirect()->route('dashboard', ['bulan' => $bulan, 'tahun' => $tahun])
+            ->with('success', "Minggu ke-$nextMinggu untuk bulan {$this->bulanIndo[$bulan]} $tahun berhasil ditambahkan!");
+    } catch (\Exception $e) {
+        Log::error('Tambah minggu failed: ' . $e->getMessage());
+        return back()->with('error', 'Gagal menambah minggu.');
     }
+}
 
     public function hapusMinggu(Request $request)
     {
