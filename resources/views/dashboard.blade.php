@@ -111,35 +111,55 @@
             @endif
         </div>
 
-        <!-- Form Tambah Bulan Baru -->
-        <form action="{{ route('dashboard.tambahBulan') }}" method="POST" class="mb-4 form-container d-flex gap-3 align-items-end">
-            @csrf
-            <div class="flex-fill">
-                <label for="bulanBaru" class="form-label">Tambah Bulan Baru</label>
-                <select name="bulan" id="bulanBaru" class="form-select" required>
-                    @foreach ($bulanIndo as $blnKey => $blnNama)
-                        <option value="{{ $blnKey }}">{{ $blnNama }}</option>
-                    @endforeach
-                </select>
-                @error('bulan')
-                    <div class="text-danger mt-1">{{ $message }}</div>
-                @enderror
+        <!-- Tombol Tambah Bulan Baru -->
+        <div class="mb-4">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambahBulanModal">
+                Tambah Bulan Baru
+            </button>
+        </div>
+
+        <!-- Modal Tambah Bulan Baru -->
+        <div class="modal fade" id="tambahBulanModal" tabindex="-1" aria-labelledby="tambahBulanLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content shadow-lg">
+                    <div class="modal-header bg-secondary text-white">
+                        <h5 class="modal-title" id="tambahBulanLabel">Tambah Bulan Baru</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="{{ route('dashboard.tambahBulan') }}" method="POST">
+                        @csrf
+                        <div class="modal-body bg-light">
+                            <div class="mb-3">
+                                <label for="bulanBaru" class="form-label">Pilih Bulan</label>
+                                <select name="bulan" id="bulanBaru" class="form-select" required>
+                                    @foreach ($bulanIndo as $blnKey => $blnNama)
+                                        <option value="{{ $blnKey }}">{{ $blnNama }}</option>
+                                    @endforeach
+                                </select>
+                                @error('bulan')
+                                    <div class="text-danger mt-1">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="mb-3">
+                                <label for="tahunBaru" class="form-label">Tahun</label>
+                                <select name="tahun" id="tahunBaru" class="form-select" required>
+                                    @for ($y = now()->year - 5; $y <= now()->year + 5; $y++)
+                                        <option value="{{ $y }}" {{ $y == $tahun ? 'selected' : '' }}>{{ $y }}</option>
+                                    @endfor
+                                </select>
+                                @error('tahun')
+                                    <div class="text-danger mt-1">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="modal-footer bg-light">
+                            <button type="submit" class="btn btn-primary">Tambah</button>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="flex-fill">
-                <label for="tahunBaru" class="form-label">Tahun</label>
-                <select name="tahun" id="tahunBaru" class="form-select" required>
-                    @for ($y = now()->year - 5; $y <= now()->year + 5; $y++)
-                        <option value="{{ $y }}" {{ $y == $tahun ? 'selected' : '' }}>{{ $y }}</option>
-                    @endfor
-                </select>
-                @error('tahun')
-                    <div class="text-danger mt-1">{{ $message }}</div>
-                @enderror
-            </div>
-            <div>
-                <button type="submit" class="btn btn-primary">Tambah Bulan Baru</button>
-            </div>
-        </form>
+        </div>
+
 
         <!-- Logout -->
         <form method="POST" action="{{ route('logout') }}" class="mb-4">
@@ -155,6 +175,6 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></style>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
