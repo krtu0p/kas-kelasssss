@@ -6,6 +6,8 @@ use App\Models\Siswa;
 use App\Models\Pembayaran;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use App\Models\Pemasukan;
+use App\Models\Pengeluaran;
 
 class SiswaController extends Controller
 {
@@ -37,18 +39,30 @@ class SiswaController extends Controller
             ->map(fn($item) => [
                 'bulan' => $item->bulan,
                 'tahun' => $item->tahun,
-                'nama' => $this->bulanIndo[$item->bulan] . ' ' . $item->tahun,
+                'nama' => ($this->bulanIndo[$item->bulan] ?? 'Unknown'),
             ]);
 
-        // Fallback for empty dropdown
         if ($dropdownBulan->isEmpty()) {
             $dropdownBulan->push([
                 'bulan' => Carbon::now()->format('m'),
                 'tahun' => Carbon::now()->year,
-                'nama' => $this->bulanIndo[Carbon::now()->format('m')] . ' ' . Carbon::now()->year,
+                'nama' => $this->bulanIndo[Carbon::now()->format('m')],
             ]);
         }
 
+
+        // DITAMBAHKAN: Logika untuk menghitung total pemasukan dan pengeluaran
+        $totalPemasukan = Pemasukan::where('bulan', $bulan)
+                                    ->where('tahun', $tahun)
+                                    ->sum('jumlah');
+
+        $totalPengeluaran = Pengeluaran::where('bulan', $bulan)
+                                        ->where('tahun', $tahun)
+                                        ->sum('jumlah');
+
+        $totalKas = $totalPemasukan - $totalPengeluaran;
+
+        // Modifikasi 'return view' untuk mengirim data baru
         return view('siswa', [
             'siswas' => $siswas,
             'maxMinggu' => $maxMinggu,
@@ -56,6 +70,9 @@ class SiswaController extends Controller
             'tahun' => $tahun,
             'dropdownBulan' => $dropdownBulan,
             'bulanIndo' => $this->bulanIndo,
+            'totalPemasukan' => $totalPemasukan,
+            'totalPengeluaran' => $totalPengeluaran,
+            'totalKasData' => $totalKas,
         ]);
     }
 }
