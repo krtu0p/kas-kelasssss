@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pemasukan Kas - Foerda</title>
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -24,7 +25,8 @@
 
         body {
             font-family: 'Montserrat', sans-serif;
-            background-color: var(--light-dark-color); /* Latar belakang gelap */
+            background-color: var(--light-dark-color);
+            /* Latar belakang gelap */
             color: var(--text-primary);
         }
 
@@ -36,8 +38,20 @@
             align-items: center;
             color: var(--white-color);
         }
-        .page-header .header-title { font-size: 1.5rem; font-weight: 700; }
-        .page-header .user-button { background-color: var(--white-color); color: var(--primary-color); border: none; border-radius: 999px; padding: 0.5rem 1.5rem; font-weight: 600; }
+
+        .page-header .header-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .page-header .user-button {
+            background-color: var(--white-color);
+            color: var(--primary-color);
+            border: none;
+            border-radius: 999px;
+            padding: 0.5rem 1.5rem;
+            font-weight: 600;
+        }
 
         /* PERUBAHAN: Menghilangkan grid, menggunakan padding seperti File B */
         .main-container {
@@ -56,6 +70,7 @@
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1.5rem;
         }
+
         .stat-card {
             background-color: var(--white-color);
             border: 1px solid var(--border-color);
@@ -65,8 +80,17 @@
             text-decoration: none;
             color: var(--text-primary);
         }
-        .stat-card .amount { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.25rem; }
-        .stat-card .label { font-size: 0.9rem; color: var(--text-secondary); }
+
+        .stat-card .amount {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-card .label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
 
         /* Kontainer untuk filter dan daftar pemasukan */
         .pemasukan-container {
@@ -83,8 +107,11 @@
             align-items: center;
             margin-bottom: 2rem;
         }
+
         .filter-form .form-select-custom {
-            appearance: none; -webkit-appearance: none; -moz-appearance: none;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
             background-color: #F3F4F6;
             border: 1px solid #E5E7EB;
             border-radius: 999px;
@@ -97,6 +124,7 @@
             background-repeat: no-repeat;
             background-size: 1.25em 1.25em;
         }
+
         .filter-form .btn-lihat {
             background-color: var(--primary-color);
             color: var(--white-color);
@@ -106,7 +134,12 @@
             font-weight: 600;
         }
 
-        .pemasukan-list { display: flex; flex-direction: column; gap: 1rem; }
+        .pemasukan-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
         .pemasukan-item {
             display: flex;
             justify-content: space-between;
@@ -115,23 +148,34 @@
             background-color: var(--white-color);
             border: 1px solid #E5E7EB;
             border-radius: 12px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
             color: #333;
         }
-        .pemasukan-item .info .amount { font-size: 1.25rem; font-weight: 600; }
-        .pemasukan-item .info .title { font-size: 0.9rem; color: var(--text-secondary); }
+
+        .pemasukan-item .info .amount {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .pemasukan-item .info .title {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
 
         /* DITAMBAHKAN: Gaya untuk kontainer chart */
         .chart-container {
             background-color: var(--white-color);
             padding: 2rem;
             border-radius: 16px;
-            margin-top: 2.5rem; /* Jarak dari panel pemasukan */
+            margin-top: 2.5rem;
+            /* Jarak dari panel pemasukan */
             box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.08);
-            height: 450px; /* Memberi tinggi agar chart terlihat baik */
+            height: 450px;
+            /* Memberi tinggi agar chart terlihat baik */
         }
     </style>
 </head>
+
 <body>
 
     <header class="page-header">
@@ -160,17 +204,17 @@
                 <div class="label">Foerda Jaya!!!</div>
             </div>
         </div>
-        
+
         <div class="pemasukan-container">
             <form method="GET" action="{{ route('pemasukan') }}" class="filter-form">
                 <select name="bulan" id="bulan" class="form-select-custom">
                     @foreach ($dropdownBulan as $key => $value)
-                        <option value="{{ $key }}" {{ $key == $bulan ? 'selected' : '' }}>{{ $value }}</option>
+                    <option value="{{ $key }}" {{ $key == $bulan ? 'selected' : '' }}>{{ $value }}</option>
                     @endforeach
                 </select>
                 <select name="tahun" id="tahun" class="form-select-custom">
                     @foreach ($yearRange as $year)
-                        <option value="{{ $year }}" {{ $year == $tahun ? 'selected' : '' }}>{{ $year }}</option>
+                    <option value="{{ $year }}" {{ $year == $tahun ? 'selected' : '' }}>{{ $year }}</option>
                     @endforeach
                 </select>
                 <button type="submit" class="btn btn-lihat">Lihat</button>
@@ -180,14 +224,14 @@
 
             <div class="pemasukan-list">
                 @forelse ($pemasukan as $item)
-                    <div class="pemasukan-item">
-                        <div class="info">
-                            <div class="amount">IDR. {{ number_format($item->jumlah, 0, ',', '.') }}</div>
-                            <div class="title">{{ $item->nama }} - {{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}</div>
-                        </div>
+                <div class="pemasukan-item">
+                    <div class="info">
+                        <div class="amount">IDR. {{ number_format($item->jumlah, 0, ',', '.') }}</div>
+                        <div class="title">{{ $item->nama }} - {{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}</div>
                     </div>
+                </div>
                 @empty
-                    <div class="text-center p-5 text-secondary">Tidak ada data pemasukan untuk periode ini.</div>
+                <div class="text-center p-5 text-secondary">Tidak ada data pemasukan untuk periode ini.</div>
                 @endforelse
             </div>
         </div>
@@ -197,7 +241,8 @@
         </div>
 
     </main>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

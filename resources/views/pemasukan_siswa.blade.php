@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pemasukan Kas - Foerda</title>
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -39,7 +40,7 @@
             text-decoration: none;
             color: var(--text-primary);
         }
-        
+
         /* =================================
           Header
         ==================================== */
@@ -50,29 +51,34 @@
             justify-content: space-between;
             align-items: center;
             color: var(--white-color);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .page-header .header-title { 
-            font-size: 1.5rem; font-weight: 700; 
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        .page-header .header-title a{
+        .page-header .header-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .page-header .header-title a {
             text-decoration: none;
             color: var(--white-color);
         }
-        
+
         /* DITAMBAHKAN: Animasi untuk Tombol User */
-        .page-header .user-button { 
-            background-color: var(--white-color); 
-            color: var(--primary-color); 
-            border: none; 
-            border-radius: 999px; 
-            padding: 0.5rem 1.5rem; 
-            font-weight: 600; 
-            transition: transform 0.2s ease; /* Transisi ditambahkan */
+        .page-header .user-button {
+            background-color: var(--white-color);
+            color: var(--primary-color);
+            border: none;
+            border-radius: 999px;
+            padding: 0.5rem 1.5rem;
+            font-weight: 600;
+            transition: transform 0.2s ease;
+            /* Transisi ditambahkan */
         }
+
         .user-button:hover {
-            transform: scale(1.05); /* Efek zoom saat hover */
+            transform: scale(1.05);
+            /* Efek zoom saat hover */
         }
 
         /* =================================
@@ -98,23 +104,37 @@
             gap: 1.5rem;
             margin-bottom: 2.5rem;
         }
-        
+
         /* DIPERBAIKI: Animasi untuk Kartu Statistik */
         .stat-card {
             background-color: var(--white-color);
+            border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 1.5rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
             text-decoration: none;
             color: var(--text-primary);
-            transition: all 0.3s ease; /* Transisi ditambahkan */
+            transition: all 0.3s ease;
+            /* Transisi ditambahkan */
         }
+
         .stat-card:hover {
-            transform: translateY(-5px); /* Efek melayang */
-            box-shadow: 0 8px 20px rgba(86,185,241,0.2); /* Efek bayangan */
+            transform: translateY(-5px);
+            /* Efek melayang */
+            box-shadow: 0 8px 20px rgba(86, 185, 241, 0.2);
+            /* Efek bayangan */
         }
-        .stat-card .amount { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.25rem; }
-        .stat-card .label { font-size: 0.9rem; color: var(--text-secondary); }
+
+        .stat-card .amount {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-card .label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
 
         /* =================================
           Kontainer Konten & Filter
@@ -123,7 +143,7 @@
             background-color: var(--white-color);
             padding: 2rem;
             border-radius: 16px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
         }
 
         .filter-form {
@@ -133,10 +153,12 @@
             margin-bottom: 2rem;
             flex-wrap: wrap;
         }
+
         .filter-form .form-group {
             flex: 1;
             min-width: 150px;
         }
+
         .filter-form label {
             font-weight: 500;
             margin-bottom: 0.5rem;
@@ -149,8 +171,10 @@
             border-color: var(--primary-color);
             transition: background-color 0.2s ease, border-color 0.2s ease;
         }
+
         .filter-form .btn-primary:hover {
-            background-color: #3C9FDA; /* Warna sedikit lebih gelap saat hover */
+            background-color: #3C9FDA;
+            /* Warna sedikit lebih gelap saat hover */
             border-color: #3C9FDA;
         }
 
@@ -160,27 +184,34 @@
         .table-wrapper {
             overflow-x: auto;
         }
+
         .custom-table {
             width: 100%;
             border-collapse: collapse;
         }
+
         .custom-table thead {
             background-color: var(--dark-color);
             color: var(--white-color);
         }
-        .custom-table th, .custom-table td {
+
+        .custom-table th,
+        .custom-table td {
             padding: 1rem;
             vertical-align: middle;
             border-bottom: 1px solid var(--border-color);
         }
-        
+
         /* DIPERBAIKI: Transisi halus pada baris tabel */
         .custom-table tbody tr {
-            transition: background-color 0.2s ease; /* Transisi ditambahkan */
+            transition: background-color 0.2s ease;
+            /* Transisi ditambahkan */
         }
+
         .custom-table tbody tr:hover {
             background-color: #f5f5f5;
         }
+
         /* LANGKAH 2: DITAMBAHKAN - Gaya CSS untuk Tombol Aksi Baru */
         .action-btn {
             display: inline-flex;
@@ -189,25 +220,32 @@
             width: 48px;
             height: 48px;
             border: none;
-            border-radius: 8px; /* Membuat sudut lebih rounded */
-            font-size: 18px;   /* Ukuran ikon */
+            border-radius: 8px;
+            /* Membuat sudut lebih rounded */
+            font-size: 18px;
+            /* Ukuran ikon */
             cursor: pointer;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
+
         .action-btn:hover {
-            transform: scale(1.1); /* Efek zoom saat disentuh mouse */
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transform: scale(1.1);
+            /* Efek zoom saat disentuh mouse */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
+
         .action-btn-edit {
             background-color: var(--edit-bg-color);
             color: var(--edit-icon-color);
         }
+
         .action-btn-delete {
             background-color: var(--delete-bg-color);
             color: var(--delete-icon-color);
         }
     </style>
 </head>
+
 <body>
     <header class="page-header">
         <div class="header-title">
@@ -215,7 +253,7 @@
         </div>
         <button class="user-button">User</button>
     </header>
-    
+
     <main class="main-container">
         <h1 class="content-title">Pemasukan Kas</h1>
 
@@ -243,79 +281,79 @@
                 </a>
             </div>
         </div>
-        
+
         <div class="content-container">
-                <form method="GET" action="{{ route('pemasukan') }}" class="filter-form">
-                    <div class="form-group">
-                        <label for="bulan">Bulan</label>
-                        <select name="bulan" id="bulan" class="form-select">
-                            @foreach ($dropdownBulan as $key => $value)
-                                <option value="{{ $key }}" {{ $key == $bulan ? 'selected' : '' }}>{{ $value }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="tahun">Tahun</label>
-                        <select name="tahun" id="tahun" class="form-select">
-                            @foreach ($yearRange as $year)
-                                <option value="{{ $year }}" {{ $year == $tahun ? 'selected' : '' }}>{{ $year }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div>
-                        <button type="submit" class="btn btn-primary">Lihat</button>
-                    </div>
-                </form>
-
-                @if (session('success')) <div class="alert alert-success">{{ session('success') }}</div> @endif
-
-                <div class="table-wrapper">
-                    <table class="table custom-table">
-                        <thead>
-                            <tr>
-                                <th>Nama Pemasukan</th>
-                                <th>Jumlah</th>
-                                <th>Tanggal</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse ($pemasukan as $item)
-                                <tr>
-                                    <td>{{ $item->nama }}</td>
-                                    <td>IDR. {{ number_format($item->jumlah, 0, ',', '.') }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d F Y') }}</td>
-                                    <td>
-                                    <div class="d-flex gap-2">
-                                        <button type="button" class="action-btn action-btn-edit"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#modalEditPemasukan"
-                                            data-id="{{ $item->id }}"
-                                            data-nama="{{ $item->nama }}"
-                                            data-jumlah="{{ $item->jumlah }}"
-                                            data-tanggal="{{ $item->tanggal->format('Y-m-d') }}">
-                                            <i class="bi bi-pencil-square"></i>
-                                        </button>
-                                        <form action="{{ route('pengeluaran.destroy', $item->id) }}" method="POST" class="m-0">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="action-btn action-btn-delete" title="Hapus" onclick="return confirm('Yakin ingin menghapus data ini?')">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="3" class="text-center p-4 text-secondary">Tidak ada data pemasukan untuk periode ini.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+            <form method="GET" action="{{ route('pemasukan') }}" class="filter-form">
+                <div class="form-group">
+                    <label for="bulan">Bulan</label>
+                    <select name="bulan" id="bulan" class="form-select">
+                        @foreach ($dropdownBulan as $key => $value)
+                        <option value="{{ $key }}" {{ $key == $bulan ? 'selected' : '' }}>{{ $value }}</option>
+                        @endforeach
+                    </select>
                 </div>
+                <div class="form-group">
+                    <label for="tahun">Tahun</label>
+                    <select name="tahun" id="tahun" class="form-select">
+                        @foreach ($yearRange as $year)
+                        <option value="{{ $year }}" {{ $year == $tahun ? 'selected' : '' }}>{{ $year }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <button type="submit" class="btn btn-primary">Lihat</button>
+                </div>
+            </form>
 
-                <div class="mt-4 d-flex justify-content-end align-items-center">
+            @if (session('success')) <div class="alert alert-success">{{ session('success') }}</div> @endif
+
+            <div class="table-wrapper">
+                <table class="table custom-table">
+                    <thead>
+                        <tr>
+                            <th>Nama Pemasukan</th>
+                            <th>Jumlah</th>
+                            <th>Tanggal</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($pemasukan as $item)
+                        <tr>
+                            <td>{{ $item->nama }}</td>
+                            <td>IDR. {{ number_format($item->jumlah, 0, ',', '.') }}</td>
+                            <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d F Y') }}</td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    <button type="button" class="action-btn action-btn-edit"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalEditPemasukan"
+                                        data-id="{{ $item->id }}"
+                                        data-nama="{{ $item->nama }}"
+                                        data-jumlah="{{ $item->jumlah }}"
+                                        data-tanggal="{{ $item->tanggal->format('Y-m-d') }}">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </button>
+                                    <form action="{{ route('pengeluaran.destroy', $item->id) }}" method="POST" class="m-0">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="action-btn action-btn-delete" title="Hapus" onclick="return confirm('Yakin ingin menghapus data ini?')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="3" class="text-center p-4 text-secondary">Tidak ada data pemasukan untuk periode ini.</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-4 d-flex justify-content-end align-items-center">
                 <div class="d-flex gap-2">
                     <!-- Ganti dengan tombol trigger modal -->
                     <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalTambahPemasukan">
@@ -410,7 +448,7 @@
 
         // Auto-update bulan/tahun saat modal dibuka
         const modalElement = document.getElementById('modalTambahPemasukan');
-        modalElement.addEventListener('shown.bs.modal', function () {
+        modalElement.addEventListener('shown.bs.modal', function() {
             updateModalMonthYear();
         });
 
@@ -426,7 +464,7 @@
         }
 
         // Saat modal edit dibuka, isi data
-        document.getElementById('modalEditPemasukan').addEventListener('show.bs.modal', function (event) {
+        document.getElementById('modalEditPemasukan').addEventListener('show.bs.modal', function(event) {
             const button = event.relatedTarget;
             const id = button.getAttribute('data-id');
             const nama = button.getAttribute('data-nama');
@@ -447,4 +485,5 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

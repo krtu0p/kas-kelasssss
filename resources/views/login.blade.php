@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,13 +11,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
-    
+
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
             font-family: 'Montserrat', sans-serif;
             min-height: 100vh;
@@ -26,6 +28,7 @@
             padding: 20px;
             background: linear-gradient(to right, #4D194D, #006466);
         }
+
         .login-container {
             background-color: #fff;
             padding: 40px;
@@ -38,12 +41,14 @@
             align-items: center;
             transition: all 0.3s ease;
         }
+
         .login-icon img {
             width: 70px;
             height: auto;
             margin-bottom: 12px;
             transition: width 0.3s ease;
         }
+
         .login-title {
             font-size: 32px;
             font-weight: 700;
@@ -52,15 +57,18 @@
             text-align: center;
             transition: all 0.3s ease;
         }
+
         .login-form {
             width: 100%;
         }
+
         .form-group {
             position: relative;
             margin-bottom: 5px;
             padding-bottom: 22px;
             width: 100%;
         }
+
         .form-group label {
             display: block;
             font-size: 14px;
@@ -69,9 +77,11 @@
             margin-bottom: 8px;
             text-align: left;
         }
+
         .input-wrapper {
             position: relative;
         }
+
         .input-wrapper .input-icon {
             position: absolute;
             left: 15px;
@@ -79,6 +89,7 @@
             transform: translateY(-50%);
             color: #aaa;
         }
+
         .form-control {
             width: 100%;
             padding: 14px 45px;
@@ -88,11 +99,13 @@
             font-family: 'Montserrat', sans-serif;
             transition: padding 0.3s ease, font-size 0.3s ease, border-color 0.2s ease, background-color 0.2s ease;
         }
+
         .form-control:focus {
             outline: none;
             border-color: #006466;
             box-shadow: 0 0 0 2px rgba(0, 100, 102, 0.2);
         }
+
         #togglePassword {
             position: absolute;
             right: 15px;
@@ -101,6 +114,7 @@
             color: #aaa;
             cursor: pointer;
         }
+
         .btn {
             display: block;
             width: 100%;
@@ -115,25 +129,31 @@
             cursor: pointer;
             transition: all 0.4s ease;
         }
+
         .btn:hover {
             transform: scale(1.05);
         }
+
         .btn:disabled {
             opacity: 0.7;
             cursor: not-allowed;
             transform: none;
         }
+
         .btn-login {
             background: linear-gradient(to right, #006466, #4D194D);
         }
+
         .btn-student {
             background: linear-gradient(to right, #065A60, #1B3A4B);
         }
+
         .student-link {
             display: block;
             width: 100%;
             text-decoration: none;
         }
+
         .error-message {
             color: #e74c3c;
             font-size: 12px;
@@ -143,32 +163,43 @@
             left: 0;
             display: none;
         }
+
         .form-control.error {
             border-color: #e74c3c;
             background-color: #fdd;
         }
+
         .error-message.show {
             display: block;
         }
+
         @media (max-width: 480px) {
-            .login-container { 
-                padding: 25px; 
+            .login-container {
+                padding: 25px;
             }
-            .login-icon img { 
-                width: 60px; 
+
+            .login-icon img {
+                width: 60px;
             }
-            .login-title { 
-                font-size: 28px; margin-bottom: 24px; 
+
+            .login-title {
+                font-size: 28px;
+                margin-bottom: 24px;
             }
-            .form-control { 
-                padding: 12px 40px; font-size: 15px; 
+
+            .form-control {
+                padding: 12px 40px;
+                font-size: 15px;
             }
-            .btn { 
-                padding: 12px; font-size: 15px; 
+
+            .btn {
+                padding: 12px;
+                font-size: 15px;
             }
         }
     </style>
 </head>
+
 <body>
 
     <div class="login-container">
@@ -187,7 +218,7 @@
                 </div>
                 <span class="error-message" id="emailError"></span>
             </div>
-            
+
             <div class="form-group">
                 <label for="password">Password</label>
                 <div class="input-wrapper">
@@ -214,12 +245,12 @@
         const loginButton = document.getElementById('loginButton');
         const loginSiswaButton = document.getElementById('loginSiswaButton');
         const togglePassword = document.getElementById('togglePassword');
-        
+
         const emailError = document.getElementById('emailError');
         const passwordError = document.getElementById('passwordError');
 
         // --- Fungsi untuk Tampilkan/Sembunyikan Password ---
-        togglePassword.addEventListener('click', function () {
+        togglePassword.addEventListener('click', function() {
             const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
             password.setAttribute('type', type);
             this.classList.toggle('fa-eye');
@@ -238,17 +269,17 @@
 
         // --- Logika Pengiriman Form ---
         form.addEventListener('submit', function(event) {
-            event.preventDefault(); 
-            
+            event.preventDefault();
+
             const isFormValid = validateForm();
 
             if (isFormValid) {
                 // Panggil fungsi spinner untuk tombol login bendahara
                 showSpinner(loginButton, "Log In as Bendahara")
-                
+
                 // Setelah jeda, kirim form. Tombol akan tetap disabled karena halaman akan berpindah.
                 setTimeout(() => {
-                    form.submit();  
+                    form.submit();
                 }, 500);
             }
         });
@@ -291,7 +322,7 @@
                 return true;
             }
         }
-        
+
         // --- Fungsi Bantuan (Helper Functions) ---
         function showError(inputElement, errorElement, message) {
             inputElement.classList.add('error');
@@ -312,4 +343,5 @@
     </script>
 
 </body>
+
 </html>

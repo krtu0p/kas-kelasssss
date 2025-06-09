@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <title>Keuangan Bulanan</title>
@@ -18,9 +19,11 @@
             display: flex;
             gap: 2rem;
         }
+
         .sidebar {
             width: 380px;
-            height: 450px; /* ✅ Tambahkan tinggi sidebar */
+            height: 450px;
+            /* ✅ Tambahkan tinggi sidebar */
             background: white;
             border-radius: 1.5rem;
             padding: 1.5rem;
@@ -31,17 +34,18 @@
         }
 
         .chart-container {
-            width: 450px
-            height: 450px;
+            width: 450px height: 450px;
             position: relative;
         }
 
         canvas {
             max-width: 100%;
-            height: 100% !important; /* ✅ Lebihkan tinggi canvas */
+            height: 100% !important;
+            /* ✅ Lebihkan tinggi canvas */
         }
     </style>
 </head>
+
 <body>
     <!-- SIDEBAR CHART -->
     <div class="sidebar">
@@ -51,14 +55,13 @@
     </div>
 
     <script>
-    const ctx = document.getElementById('keuanganChart').getContext('2d');
+        const ctx = document.getElementById('keuanganChart').getContext('2d');
 
-    const chart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: @json($labels), // ['Pemasukan', 'Pengeluaran', 'Total Kas']
-            datasets: [
-                {
+        const chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: @json($labels), // ['Pemasukan', 'Pengeluaran', 'Total Kas']
+                datasets: [{
                     label: 'Jumlah',
                     backgroundColor: [
                         'rgb(23, 255, 147)',
@@ -71,27 +74,29 @@
                         @json($totalKasData[0])
                     ],
                     borderRadius: 6
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false }
+                }]
             },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function(value) {
-                            return 'Rp' + value.toLocaleString('id-ID');
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return 'Rp' + value.toLocaleString('id-ID');
+                            }
                         }
                     }
                 }
             }
-        }
-    });
-</script>
+        });
+    </script>
 </body>
+
 </html>

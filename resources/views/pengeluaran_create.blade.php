@@ -1,26 +1,30 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tambah Pengeluaran</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        .form-container { max-width: 600px; }
+        .form-container {
+            max-width: 600px;
+        }
     </style>
 </head>
+
 <body class="bg-light">
     <div class="container py-5">
         <h2 class="mb-4">Tambah Pengeluaran</h2>
 
         @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
         @endif
 
         <form method="POST" action="{{ route('pengeluaran.store') }}" class="form-container" onsubmit="return confirm('Yakin ingin menyimpan pengeluaran ini?')">
@@ -64,4 +68,5 @@
         };
     </script>
 </body>
+
 </html>
