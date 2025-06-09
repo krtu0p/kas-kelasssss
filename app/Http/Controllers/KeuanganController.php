@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use App\Models\Siswa;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class KeuanganController extends Controller
 {
@@ -307,125 +308,101 @@ class KeuanganController extends Controller
         }
     }
 
-    // Ganti fungsi utangSiswa() yang ada dengan versi ini
-    public function utangSiswa(Request $request)
-    {
-        $bulan = $request->input('bulan', null);
-        $tahun = $request->input('tahun', Carbon::now()->year);
-
-        // Variabel untuk stat-cards (total keseluruhan)
-        $totalPemasukan = Pemasukan::sum('jumlah');
-        $totalPengeluaran = Pengeluaran::sum('jumlah');
-        $totalKas = $totalPemasukan - $totalPengeluaran;
-
-        // Logika untuk menghitung utang
-        $siswa = Siswa::all();
-        $utangData = [];
-
-        foreach ($siswa as $s) {
-            $query = Pembayaran::where('siswa_id', $s->id)->where('tahun', $tahun);
-            if ($bulan) {
-                $query->where('bulan', $bulan);
-            }
-
-            $payments = $query->get()->keyBy(function ($item) {
-                return $item->bulan . '-' . $item->minggu;
-            });
-
-            $missedPayments = 0;
-            $monthsToCheck = $bulan ? [$bulan] : array_keys($this->bulanIndo);
-
-            foreach ($monthsToCheck as $month) {
-                $maxMinggu = Pembayaran::where('bulan', $month)->where('tahun', $tahun)->max('minggu') ?? 0;
-                for ($week = 1; $week <= $maxMinggu; $week++) {
-                    $paymentKey = $month . '-' . $week;
-                    if (!isset($payments[$paymentKey]) || !$payments[$paymentKey]->status) {
-                        $missedPayments++;
-                    }
-                }
-            }
-
-            $totalUtang = $missedPayments * 5000;
-            if ($totalUtang > 0) {
-                $utangData[] = [
-                    'nama' => $s->nama,
-                    'missed_payments' => $missedPayments, // Ditambahkan kembali
-                    'total_utang' => $totalUtang,
-                ];
-            }
-        }
-
-        usort($utangData, fn($a, $b) => $b['total_utang'] <=> $a['total_utang']);
-
-        // Variabel untuk filter dropdown
-        $dropdownBulan = Pembayaran::select('bulan')->distinct()->where('tahun', $tahun)->pluck('bulan')->sort()->mapWithKeys(fn($b) => [$b => $this->bulanIndo[$b]]);
-        $yearRange = Pembayaran::select('tahun')->distinct()->orderBy('tahun', 'desc')->pluck('tahun');
-
-        return view('utang_siswa', [
-            'utangData' => $utangData,
-            'bulan' => $bulan,
-            'tahun' => $tahun,
-            'dropdownBulan' => $dropdownBulan,
-            'yearRange' => $yearRange,
-            'bulanIndo' => $this->bulanIndo,
-            'totalPemasukan' => $totalPemasukan,
-            'totalPengeluaran' => $totalPengeluaran,
-            'totalKas' => $totalKas,
-        ]);
-    }
-
-    // Ganti fungsi utangAdmin() yang ada dengan versi ini
+    /// FUNGSI BARU, GANTIKAN utangAdmin() YANG LAMA
     public function utangAdmin(Request $request)
     {
-        // Logikanya sama persis dengan utangSiswa, hanya view-nya yang berbeda
+        // Panggil helper, lalu tampilkan view untuk admin
+        $data = $this->getUtangData($request);
+        return view('utang_admin', $data);
+    }
+
+    // FUNGSI BARU, GANTIKAN utangSiswa() YANG LAMA
+    public function utangSiswa(Request $request)
+    {
+        // Panggil helper, lalu tampilkan view untuk siswa
+        $data = $this->getUtangData($request);
+        return view('utang_siswa', $data);
+    }
+
+    /**
+     * PRIVATE HELPER FUNCTION
+     * Logika inti untuk menghitung utang dengan cara yang efisien.
+     * Fungsi ini tidak bisa diakses dari URL.
+     */
+    private function getUtangData(Request $request)
+    {
         $bulan = $request->input('bulan', null);
         $tahun = $request->input('tahun', Carbon::now()->year);
 
-        $totalPemasukan = Pemasukan::sum('jumlah');
-        $totalPengeluaran = Pengeluaran::sum('jumlah');
-        $totalKas = $totalPemasukan - $totalPengeluaran;
-
-        $siswa = Siswa::all();
-        $utangData = [];
-
-        foreach ($siswa as $s) {
-            $query = Pembayaran::where('siswa_id', $s->id)->where('tahun', $tahun);
+        // --- 1. Kalkulasi Statistik Pemasukan & Pengeluaran (Berdasarkan Filter) ---
+        $statsQuery = function ($query) use ($bulan, $tahun) {
+            $query->where('tahun', $tahun);
             if ($bulan) {
                 $query->where('bulan', $bulan);
             }
+        };
 
-            $payments = $query->get()->keyBy(fn($item) => $item->bulan . '-' . $item->minggu);
+        $totalPemasukan = Pemasukan::where($statsQuery)->sum('jumlah');
+        $totalPengeluaran = Pengeluaran::where($statsQuery)->sum('jumlah');
+        $totalKas = $totalPemasukan - $totalPengeluaran;
 
+        // --- 2. Ambil semua data yang relevan dalam beberapa kueri efisien ---
+        $siswa = Siswa::all()->keyBy('id'); // Ambil semua siswa, di-indeks berdasarkan ID
+
+        // Ambil semua pembayaran di tahun yang dipilih, kelompokkan berdasarkan siswa_id
+        $pembayaranPerSiswa = Pembayaran::where('tahun', $tahun)->get()->groupBy('siswa_id');
+
+        // Ambil data minggu maksimal untuk setiap bulan di tahun yang dipilih dalam 1 kueri
+        $maxMingguPerBulan = Pembayaran::where('tahun', $tahun)
+            ->select('bulan', DB::raw('MAX(minggu) as max_minggu'))
+            ->groupBy('bulan')
+            ->get()
+            ->pluck('max_minggu', 'bulan');
+
+        // --- 3. Proses data di PHP (Jauh lebih cepat daripada kueri di dalam loop) ---
+        $utangData = [];
+        $monthsToCheck = $bulan ? [$bulan] : array_keys($this->bulanIndo);
+
+        foreach ($siswa as $siswaId => $s) {
             $missedPayments = 0;
-            $monthsToCheck = $bulan ? [$bulan] : array_keys($this->bulanIndo);
+            $pembayaranSiswaIni = $pembayaranPerSiswa->get($siswaId, collect())->keyBy(function ($item) {
+                return $item->bulan . '-' . $item->minggu; // Buat key unik untuk pencarian cepat
+            });
 
             foreach ($monthsToCheck as $month) {
-                $maxMinggu = Pembayaran::where('bulan', $month)->where('tahun', $tahun)->max('minggu') ?? 0;
+                $maxMinggu = $maxMingguPerBulan->get($month, 0);
+
                 for ($week = 1; $week <= $maxMinggu; $week++) {
                     $paymentKey = $month . '-' . $week;
-                    if (!isset($payments[$paymentKey]) || !$payments[$paymentKey]->status) {
+                    $payment = $pembayaranSiswaIni->get($paymentKey);
+
+                    if (!$payment || !$payment->status) {
                         $missedPayments++;
                     }
                 }
             }
 
             $totalUtang = $missedPayments * 5000;
+
             if ($totalUtang > 0) {
                 $utangData[] = [
+                    'siswa_id' => $s->id,
                     'nama' => $s->nama,
-                    'missed_payments' => $missedPayments, // Ditambahkan kembali
+                    'missed_payments' => $missedPayments,
                     'total_utang' => $totalUtang,
                 ];
             }
         }
 
-        usort($utangData, fn($a, $b) => $b['total_utang'] <=> $a['total_utang']);
-
+        // --- 4. Siapkan data untuk filter dropdown ---
         $dropdownBulan = Pembayaran::select('bulan')->distinct()->where('tahun', $tahun)->pluck('bulan')->sort()->mapWithKeys(fn($b) => [$b => $this->bulanIndo[$b]]);
         $yearRange = Pembayaran::select('tahun')->distinct()->orderBy('tahun', 'desc')->pluck('tahun');
+        if ($yearRange->isEmpty()) {
+            $yearRange = collect([$tahun]);
+        }
 
-        // Mengarah ke view 'utang_admin'
-        return view('utang_admin', [
+        // --- 5. Kembalikan semua data yang dibutuhkan oleh view ---
+        return [
             'utangData' => $utangData,
             'bulan' => $bulan,
             'tahun' => $tahun,
@@ -435,6 +412,6 @@ class KeuanganController extends Controller
             'totalPemasukan' => $totalPemasukan,
             'totalPengeluaran' => $totalPengeluaran,
             'totalKas' => $totalKas,
-        ]);
+        ];
     }
 }

@@ -1,3 +1,4 @@
+{{-- Kode ini sudah sesuai dan tidak memerlukan perubahan. --}}
 <!DOCTYPE html>
 <html lang="id">
 
@@ -11,7 +12,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
-        /* (Semua CSS sama seperti kode lama Anda) */
         :root {
             --primary-color: #56B9F1;
             --white-color: #FFFFFF;
@@ -191,10 +191,8 @@
 <body>
     <header class="page-header">
         <div class="header-title">
-            {{-- PERUBAHAN: Mengarah ke halaman utama siswa --}}
             <a href="{{ route('siswa.index') }}">Kas Foerda</a>
         </div>
-        {{-- Tombol Logout & Profil Admin Dihapus --}}
     </header>
 
     <main class="main-container">
@@ -218,7 +216,6 @@
                 <div class="label">Total Kas</div>
             </div>
             <div class="stat-card">
-                {{-- PERUBAHAN: Mengarah ke rute siswa --}}
                 <a href="{{ route('utang.siswa') }}">
                     <div class="amount">Utang</div>
                     <div class="label">Lihat Data Utang</div>
@@ -227,14 +224,13 @@
         </div>
 
         <div class="table-container">
-            {{-- PERUBAHAN: Action form mengarah ke rute siswa --}}
             <form method="GET" action="{{ route('utang.siswa') }}" class="filter-form">
                 <div class="form-group">
                     <label for="bulan">Pilih Bulan</label>
                     <select name="bulan" id="bulan" class="form-select">
                         <option value="">Semua Bulan</option>
                         @foreach ($dropdownBulan as $key => $namaBulan)
-                        <option value="{{ $key }}" {{ $bulan == $key ? 'selected' : '' }}>
+                        <option value="{{ $key }}" {{ (string) $bulan === (string) $key ? 'selected' : '' }}>
                             {{ $namaBulan }}
                         </option>
                         @endforeach
@@ -259,7 +255,6 @@
                         <tr>
                             <th>No</th>
                             <th>Nama Siswa</th>
-                            {{-- Kolom jumlah minggu sengaja dihilangkan untuk view publik --}}
                             <th>Total Utang (Rp)</th>
                         </tr>
                     </thead>
@@ -272,14 +267,12 @@
                         </tr>
                         @empty
                         <tr>
-                            {{-- PERUBAHAN: colspan menjadi 3 --}}
                             <td colspan="3" class="text-center p-4">Alhamdulillah! Tidak ada yang punya utang untuk periode ini.</td>
                         </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
-            {{-- Tombol kembali ke dashboard dihapus untuk view publik --}}
         </div>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

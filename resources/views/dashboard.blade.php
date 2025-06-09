@@ -362,9 +362,7 @@
             </div>
             
             <div class="mt-4 pt-4 border-top d-flex flex-wrap justify-content-center gap-2">
-                <a href="{{ route('siswa.index') }}" class="btn btn-secondary">Manajemen Siswa</a>
-                 <a href="{{ route('pemasukan') }}" class="btn btn-outline-success">Manajemen Pemasukan</a>
-                <a href="{{ route('pengeluaran') }}" class="btn btn-outline-danger">Manajemen Pengeluaran</a>
+                <a href="{{ route('siswa.index') }}" class="btn btn-secondary">Daftar Siswa</a>
             </div>
         </div>
     </main>

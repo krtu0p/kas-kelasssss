@@ -1,3 +1,4 @@
+{{-- Kode ini sudah sesuai dan tidak memerlukan perubahan. --}}
 <!DOCTYPE html>
 <html lang="id">
 
@@ -5,14 +6,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin: Data Utang Siswa - Kas Foerda</title>
-    {{-- (Bagian <head> lainnya sama seperti kode lama Anda) --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
-        /* (Semua CSS sama seperti kode lama Anda) */
         :root {
             --primary-color: #56B9F1;
             --white-color: #FFFFFF;
@@ -261,7 +260,6 @@
 
     <main class="main-container">
         <h1 class="content-title">Admin: Data Utang Siswa</h1>
-
         <div class="stats-grid">
             <div class="stat-card">
                 <a href="{{ route('pemasukan') }}">
@@ -280,7 +278,6 @@
                 <div class="label">Total Kas</div>
             </div>
             <div class="stat-card">
-                {{-- PERUBAHAN: Mengarah ke rute admin --}}
                 <a href="{{ route('utang.admin') }}">
                     <div class="amount">Utang</div>
                     <div class="label">Foerda Jaya!!!</div>
@@ -289,15 +286,13 @@
         </div>
 
         <div class="table-container">
-            {{-- Form Filter --}}
-            {{-- PERUBAHAN: Action form mengarah ke rute admin --}}
             <form method="GET" action="{{ route('utang.admin') }}" class="filter-form">
                 <div class="form-group">
                     <label for="bulan">Pilih Bulan</label>
                     <select name="bulan" id="bulan" class="form-select">
                         <option value="">Semua Bulan</option>
                         @foreach ($dropdownBulan as $key => $namaBulan)
-                        <option value="{{ $key }}" {{ $bulan == $key ? 'selected' : '' }}>
+                        <option value="{{ $key }}" {{ (string) $bulan === (string) $key ? 'selected' : '' }}>
                             {{ $namaBulan }}
                         </option>
                         @endforeach
@@ -322,7 +317,7 @@
                         <tr>
                             <th>No</th>
                             <th>Nama Siswa</th>
-                            <th>Jumlah Tunggakan (Minggu)</th> {{-- Kolom ini bisa ditampilkan untuk admin --}}
+                            <th>Jumlah Tunggakan (Minggu)</th>
                             <th>Total Utang (Rp)</th>
                         </tr>
                     </thead>
@@ -331,7 +326,7 @@
                         <tr>
                             <td>{{ $index + 1 }}</td>
                             <td>{{ $utang['nama'] }}</td>
-                            <td>{{ $utang['missed_payments'] }}</td> {{-- Variabel dari controller baru --}}
+                            <td>{{ $utang['missed_payments'] }}</td>
                             <td>{{ number_format($utang['total_utang'], 0, ',', '.') }}</td>
                         </tr>
                         @empty
@@ -349,7 +344,6 @@
         </div>
     </main>
 
-    {{-- (Modal Logout sama seperti kode lama Anda) --}}
     <div class="modal fade" id="logoutConfirmModal" tabindex="-1" aria-labelledby="logoutConfirmModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content shadow-lg">
