@@ -344,6 +344,9 @@
                     </div>
                 </div>
             </form>
+            <div class="mt-4 pt-4 border-top d-flex flex-wrap justify-content-center gap-2">
+                <a href="{{ route('siswa.index') }}" class="btn btn-secondary">Lihat Siswa</a>
+            </div>
         </div>
     </main>
 
