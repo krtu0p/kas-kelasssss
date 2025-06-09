@@ -136,8 +136,9 @@
             border-collapse: collapse;
         }
 
-        .payment-table thead {
-            background-color: var(--dark-color);
+        table.payment-table thead th {
+            background-color: #000000;
+            /* Warna hitam pekat */
             color: var(--white-color);
         }
 
