@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,52 +24,232 @@
             --delete-bg-color: #FEF3F2;
             --delete-icon-color: #F04438;
         }
+
         /* Existing styles from pemasukan.blade.php */
         body {
             font-family: 'Montserrat', sans-serif;
             background-color: var(--body-bg);
             color: var(--text-primary);
         }
-        a { text-decoration: none; color: var(--text-primary); }
-        .page-header { background-color: var(--primary-color); padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center; color: var(--white-color); box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
-        .page-header .header-title { font-size: 1.5rem; font-weight: 700; }
-        .page-header .header-title a { text-decoration: none; color: var(--white-color); }
-        .user-profile-dropdown .user-button { width: 45px; height: 45px; padding: 0; border: 2px solid var(--white-color); border-radius: 50%; background-color: var(--primary-color); color: var(--white-color); display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; }
-        .user-profile-dropdown .user-button:hover { transform: scale(1.1); background-color: var(--white-color); color: var(--primary-color); }
-        .user-profile-dropdown .user-button .bi-person-fill { font-size: 1.5rem; }
-        .user-profile-dropdown .dropdown-menu { border-radius: 0.75rem; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); border: none; padding: 0.5rem; }
-        .user-profile-dropdown .dropdown-item { font-weight: 500; padding: 0.5rem 1rem; border-radius: 0.5rem; }
-        .user-profile-dropdown .dropdown-item .bi { margin-right: 0.5rem; vertical-align: middle; }
-        .user-profile-dropdown .dropdown-item.text-danger:hover, .user-profile-dropdown .dropdown-item.text-danger:focus { background-color: #fce8e8; color: #b02a37 !important; }
-        .main-container { padding: 1.5rem; }
-        .content-title { font-size: 1.75rem; font-weight: 700; color: var(--primary-color); margin-bottom: 2rem; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem; }
-        .stat-card { background-color: var(--white-color); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07); text-decoration: none; color: var(--text-primary); transition: all 0.3s ease; }
-        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(86, 185, 241, 0.2); }
-        .stat-card .amount { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.25rem; }
-        .stat-card .label { font-size: 0.9rem; color: var(--text-secondary); }
-        .content-container { background-color: var(--white-color); padding: 2rem; border-radius: 16px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07); }
-        .filter-form { display: flex; gap: 1rem; align-items: flex-end; margin-bottom: 2rem; flex-wrap: wrap; }
-        .filter-form .form-group { flex: 1; min-width: 150px; }
-        .filter-form label { font-weight: 500; margin-bottom: 0.5rem; display: block; }
-        .filter-form .btn-primary { background-color: var(--primary-color); border-color: var(--primary-color); transition: background-color 0.2s ease, border-color 0.2s ease; }
-        .filter-form .btn-primary:hover { background-color: #3C9FDA; border-color: #3C9FDA; }
-        .table-wrapper { overflow-x: auto; }
-        .custom-table { width: 100%; border-collapse: collapse; }
-        .custom-table thead { background-color: var(--dark-color); color: var(--white-color); }
-        .custom-table th, .custom-table td { padding: 1rem; vertical-align: middle; border-bottom: 1px solid var(--border-color); }
-        .custom-table tbody tr { transition: background-color 0.2s ease; }
-        .custom-table tbody tr:hover { background-color: #f5f5f5; }
-        .action-btn { display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border: none; border-radius: 8px; font-size: 18px; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; }
-        .action-btn:hover { transform: scale(1.1); box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }
-        .action-btn-edit { background-color: var(--edit-bg-color); color: var(--edit-icon-color); }
-        .action-btn-delete { background-color: var(--delete-bg-color); color: var(--delete-icon-color); }
+
+        a {
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        .page-header {
+            background-color: var(--primary-color);
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--white-color);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .page-header .header-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .page-header .header-title a {
+            text-decoration: none;
+            color: var(--white-color);
+        }
+
+        .user-profile-dropdown .user-button {
+            width: 45px;
+            height: 45px;
+            padding: 0;
+            border: 2px solid var(--white-color);
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .user-profile-dropdown .user-button:hover {
+            transform: scale(1.1);
+            background-color: var(--white-color);
+            color: var(--primary-color);
+        }
+
+        .user-profile-dropdown .user-button .bi-person-fill {
+            font-size: 1.5rem;
+        }
+
+        .user-profile-dropdown .dropdown-menu {
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: none;
+            padding: 0.5rem;
+        }
+
+        .user-profile-dropdown .dropdown-item {
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+        }
+
+        .user-profile-dropdown .dropdown-item .bi {
+            margin-right: 0.5rem;
+            vertical-align: middle;
+        }
+
+        .user-profile-dropdown .dropdown-item.text-danger:hover,
+        .user-profile-dropdown .dropdown-item.text-danger:focus {
+            background-color: #fce8e8;
+            color: #b02a37 !important;
+        }
+
+        .main-container {
+            padding: 1.5rem;
+        }
+
+        .content-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .stat-card {
+            background-color: var(--white-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(86, 185, 241, 0.2);
+        }
+
+        .stat-card .amount {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-card .label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .content-container {
+            background-color: var(--white-color);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+        }
+
+        .filter-form {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-end;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-form .form-group {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .filter-form label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .filter-form .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+
+        .filter-form .btn-primary:hover {
+            background-color: #3C9FDA;
+            border-color: #3C9FDA;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        .custom-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .custom-table thead {
+            background-color: var(--dark-color);
+            color: var(--white-color);
+        }
+
+        .custom-table th,
+        .custom-table td {
+            padding: 1rem;
+            vertical-align: middle;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .custom-table tbody tr {
+            transition: background-color 0.2s ease;
+        }
+
+        .custom-table tbody tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .action-btn-edit {
+            background-color: var(--edit-bg-color);
+            color: var(--edit-icon-color);
+        }
+
+        .action-btn-delete {
+            background-color: var(--delete-bg-color);
+            color: var(--delete-icon-color);
+        }
     </style>
 </head>
+
 <body>
     <header class="page-header">
         <div class="header-title">
-            <a href="{{ route('dashboard') }}">Kas Foerda</a>
+            <a href="{{ route('siswa.index') }}">Kas Foerda</a>
         </div>
         @auth
         <div class="dropdown user-profile-dropdown">
@@ -110,9 +291,9 @@
                 <div class="label">Total Kas</div>
             </div>
             <div class="stat-card">
-                <a href="{{ route('utang') }}">
+                <a href="{{ route('utang.siswa') }}">
                     <div class="amount">Utang</div>
-                    <div class="label">Foerda Jaya!!!</div>
+                    <div class="label">Lihat Data Utang</div>
                 </a>
             </div>
         </div>
@@ -300,6 +481,24 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="logoutConfirmModal" tabindex="-1" aria-labelledby="logoutConfirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content shadow-lg">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="logoutConfirmModalLabel">Konfirmasi Logout</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="fs-5">Apakah Anda yakin akan logout?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-danger" id="confirmLogoutBtn">Logout</button>
+                </div>
+            </div>
+        </div>
+    </div>
     @endauth
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -328,7 +527,15 @@
             const form = document.getElementById('hapusPemasukanForm');
             form.action = `{{ url('pemasukan') }}/${id}`;
         });
+
+        const confirmLogoutBtn = document.getElementById('confirmLogoutBtn');
+        if (confirmLogoutBtn) {
+            confirmLogoutBtn.addEventListener('click', function () {
+                document.getElementById('logoutForm').submit();
+            });
+        }
     </script>
     @endauth
 </body>
+
 </html>

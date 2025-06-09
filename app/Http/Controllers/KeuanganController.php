@@ -307,82 +307,125 @@ class KeuanganController extends Controller
         }
     }
 
-    public function utang(Request $request)
+    // Ganti fungsi utangSiswa() yang ada dengan versi ini
+    public function utangSiswa(Request $request)
     {
         $bulan = $request->input('bulan', null);
         $tahun = $request->input('tahun', Carbon::now()->year);
 
-        $totalPemasukan = Pemasukan::where('bulan', $bulan)
-            ->where('tahun', $tahun)
-            ->sum('jumlah');
-        $totalPengeluaran = Pengeluaran::where('bulan', $bulan)
-            ->where('tahun', $tahun)
-            ->sum('jumlah');
+        // Variabel untuk stat-cards (total keseluruhan)
+        $totalPemasukan = Pemasukan::sum('jumlah');
+        $totalPengeluaran = Pengeluaran::sum('jumlah');
         $totalKas = $totalPemasukan - $totalPengeluaran;
 
+        // Logika untuk menghitung utang
         $siswa = Siswa::all();
         $utangData = [];
 
         foreach ($siswa as $s) {
+            $query = Pembayaran::where('siswa_id', $s->id)->where('tahun', $tahun);
+            if ($bulan) {
+                $query->where('bulan', $bulan);
+            }
+
+            $payments = $query->get()->keyBy(function ($item) {
+                return $item->bulan . '-' . $item->minggu;
+            });
+
             $missedPayments = 0;
             $monthsToCheck = $bulan ? [$bulan] : array_keys($this->bulanIndo);
 
             foreach ($monthsToCheck as $month) {
-                $maxMinggu = Pembayaran::where('bulan', $month)
-                    ->where('tahun', $tahun)
-                    ->max('minggu') ?? 0;
-
+                $maxMinggu = Pembayaran::where('bulan', $month)->where('tahun', $tahun)->max('minggu') ?? 0;
                 for ($week = 1; $week <= $maxMinggu; $week++) {
-                    $payment = Pembayaran::where('siswa_id', $s->id)
-                        ->where('bulan', $month)
-                        ->where('tahun', $tahun)
-                        ->where('minggu', $week)
-                        ->first();
-
-                    if (!$payment || !$payment->status) {
+                    $paymentKey = $month . '-' . $week;
+                    if (!isset($payments[$paymentKey]) || !$payments[$paymentKey]->status) {
                         $missedPayments++;
                     }
                 }
             }
 
             $totalUtang = $missedPayments * 5000;
-
-            if ($missedPayments > 0) {
+            if ($totalUtang > 0) {
                 $utangData[] = [
-                    'siswa_id' => $s->id,
                     'nama' => $s->nama,
-                    'missed_payments' => $missedPayments,
+                    'missed_payments' => $missedPayments, // Ditambahkan kembali
                     'total_utang' => $totalUtang,
                 ];
             }
         }
 
-        $dropdownBulan = Pembayaran::select('bulan', 'tahun')
-            ->distinct()
-            ->orderByDesc('tahun')
-            ->orderByDesc('bulan')
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'bulan' => $item->bulan,
-                    'tahun' => $item->tahun,
-                    'nama' => $this->bulanIndo[$item->bulan] ?? 'N/A',
+        usort($utangData, fn($a, $b) => $b['total_utang'] <=> $a['total_utang']);
+
+        // Variabel untuk filter dropdown
+        $dropdownBulan = Pembayaran::select('bulan')->distinct()->where('tahun', $tahun)->pluck('bulan')->sort()->mapWithKeys(fn($b) => [$b => $this->bulanIndo[$b]]);
+        $yearRange = Pembayaran::select('tahun')->distinct()->orderBy('tahun', 'desc')->pluck('tahun');
+
+        return view('utang_siswa', [
+            'utangData' => $utangData,
+            'bulan' => $bulan,
+            'tahun' => $tahun,
+            'dropdownBulan' => $dropdownBulan,
+            'yearRange' => $yearRange,
+            'bulanIndo' => $this->bulanIndo,
+            'totalPemasukan' => $totalPemasukan,
+            'totalPengeluaran' => $totalPengeluaran,
+            'totalKas' => $totalKas,
+        ]);
+    }
+
+    // Ganti fungsi utangAdmin() yang ada dengan versi ini
+    public function utangAdmin(Request $request)
+    {
+        // Logikanya sama persis dengan utangSiswa, hanya view-nya yang berbeda
+        $bulan = $request->input('bulan', null);
+        $tahun = $request->input('tahun', Carbon::now()->year);
+
+        $totalPemasukan = Pemasukan::sum('jumlah');
+        $totalPengeluaran = Pengeluaran::sum('jumlah');
+        $totalKas = $totalPemasukan - $totalPengeluaran;
+
+        $siswa = Siswa::all();
+        $utangData = [];
+
+        foreach ($siswa as $s) {
+            $query = Pembayaran::where('siswa_id', $s->id)->where('tahun', $tahun);
+            if ($bulan) {
+                $query->where('bulan', $bulan);
+            }
+
+            $payments = $query->get()->keyBy(fn($item) => $item->bulan . '-' . $item->minggu);
+
+            $missedPayments = 0;
+            $monthsToCheck = $bulan ? [$bulan] : array_keys($this->bulanIndo);
+
+            foreach ($monthsToCheck as $month) {
+                $maxMinggu = Pembayaran::where('bulan', $month)->where('tahun', $tahun)->max('minggu') ?? 0;
+                for ($week = 1; $week <= $maxMinggu; $week++) {
+                    $paymentKey = $month . '-' . $week;
+                    if (!isset($payments[$paymentKey]) || !$payments[$paymentKey]->status) {
+                        $missedPayments++;
+                    }
+                }
+            }
+
+            $totalUtang = $missedPayments * 5000;
+            if ($totalUtang > 0) {
+                $utangData[] = [
+                    'nama' => $s->nama,
+                    'missed_payments' => $missedPayments, // Ditambahkan kembali
+                    'total_utang' => $totalUtang,
                 ];
-            });
-
-        $yearRange = $dropdownBulan->pluck('tahun')->unique()->sortDesc()->values();
-
-        if (empty($yearRange->toArray())) {
-            $yearRange = [Carbon::now()->year];
+            }
         }
 
-        if ($dropdownBulan->isEmpty() && !$request->has('bulan')) {
-            $dropdownBulan = collect($this->bulanIndo)->map(function ($nama, $bulan) {
-                return ['bulan' => $bulan, 'nama' => $nama, 'tahun' => Carbon::now()->year];
-            });
-        }
+        usort($utangData, fn($a, $b) => $b['total_utang'] <=> $a['total_utang']);
 
-        return view('utang', [
+        $dropdownBulan = Pembayaran::select('bulan')->distinct()->where('tahun', $tahun)->pluck('bulan')->sort()->mapWithKeys(fn($b) => [$b => $this->bulanIndo[$b]]);
+        $yearRange = Pembayaran::select('tahun')->distinct()->orderBy('tahun', 'desc')->pluck('tahun');
+
+        // Mengarah ke view 'utang_admin'
+        return view('utang_admin', [
             'utangData' => $utangData,
             'bulan' => $bulan,
             'tahun' => $tahun,

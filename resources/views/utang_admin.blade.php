@@ -4,27 +4,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Kas Kelas</title>
+    <title>Admin: Data Utang Siswa - Kas Foerda</title>
+    {{-- (Bagian <head> lainnya sama seperti kode lama Anda) --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
+        /* (Semua CSS sama seperti kode lama Anda) */
         :root {
             --primary-color: #56B9F1;
-            --dark-color: #121212;
-            --light-dark-color: #1E1E1E;
             --white-color: #FFFFFF;
+            --dark-color: #212529;
             --text-primary: #333333;
             --text-secondary: #757575;
-            --green-color: #28a745;
-            --red-color: #dc3545;
             --border-color: #EEEEEE;
+            --body-bg: #f8f9fa;
         }
 
         body {
             font-family: 'Montserrat', sans-serif;
+            background-color: var(--body-bg);
             color: var(--text-primary);
         }
 
@@ -96,8 +97,8 @@
 
         .user-profile-dropdown .dropdown-item.text-danger:hover,
         .user-profile-dropdown .dropdown-item.text-danger:focus {
-            background-color: #f8d7da;
-            color: #721c24 !important;
+            background-color: #fce8e8;
+            color: #b02a37 !important;
         }
 
         .main-container {
@@ -222,11 +223,6 @@
             white-space: nowrap;
         }
 
-        .payment-table th:first-child,
-        .payment-table td:first-child {
-            padding-left: 1.5rem;
-        }
-
         .payment-table tbody tr {
             border-bottom: 1px solid var(--border-color);
         }
@@ -238,30 +234,13 @@
         .payment-table tbody tr:hover {
             background-color: #F9FAFB;
         }
-
-        .payment-table .text-center {
-            text-align: center;
-        }
-
-        .status-icon {
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-
-        .status-paid {
-            color: var(--green-color);
-        }
-
-        .status-unpaid {
-            color: var(--red-color);
-        }
     </style>
 </head>
 
 <body>
     <header class="page-header">
         <div class="header-title">
-            <a href="{{ route('siswa.index') }}">Kas Foerda</a>
+            <a href="{{ route('dashboard') }}">Kas Foerda</a>
         </div>
         <div class="dropdown user-profile-dropdown">
             <button class="user-button" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="User Menu">
@@ -281,7 +260,7 @@
     </header>
 
     <main class="main-container">
-        <h1 class="content-title">Data Pembayaran Kas</h1>
+        <h1 class="content-title">Admin: Data Utang Siswa</h1>
 
         <div class="stats-grid">
             <div class="stat-card">
@@ -301,35 +280,25 @@
                 <div class="label">Total Kas</div>
             </div>
             <div class="stat-card">
-                {{-- Menggunakan nama rute yang sudah kita perbaiki di web.php --}}
-                <a href="{{ route('utang.siswa') }}">
+                {{-- PERUBAHAN: Mengarah ke rute admin --}}
+                <a href="{{ route('utang.admin') }}">
                     <div class="amount">Utang</div>
-                    <div class="label">Lihat Data Utang</div>
+                    <div class="label">Foerda Jaya!!!</div>
                 </a>
             </div>
         </div>
 
         <div class="table-container">
-            @if (session('success') && Auth::check())
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            @endif
-            @if (session('error') && Auth::check())
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                {{ session('error') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            @endif
-
-            <form method="GET" action="{{ route('siswa.index') }}" class="filter-form">
+            {{-- Form Filter --}}
+            {{-- PERUBAHAN: Action form mengarah ke rute admin --}}
+            <form method="GET" action="{{ route('utang.admin') }}" class="filter-form">
                 <div class="form-group">
-                    <label for="bulan">Bulan</label>
-                    <select name="bulan" id="bulan" class="form-select" required>
-                        @foreach ($dropdownBulan as $item)
-                        <option value="{{ $item['bulan'] }}" {{ $item['bulan'] == $bulan ? 'selected' : '' }}>
-                            {{ $item['nama'] }}
+                    <label for="bulan">Pilih Bulan</label>
+                    <select name="bulan" id="bulan" class="form-select">
+                        <option value="">Semua Bulan</option>
+                        @foreach ($dropdownBulan as $key => $namaBulan)
+                        <option value="{{ $key }}" {{ $bulan == $key ? 'selected' : '' }}>
+                            {{ $namaBulan }}
                         </option>
                         @endforeach
                     </select>
@@ -337,8 +306,8 @@
                 <div class="form-group">
                     <label for="tahun">Tahun</label>
                     <select name="tahun" id="tahun" class="form-select" required>
-                        @foreach ($dropdownBulan->pluck('tahun')->unique()->sortDesc() as $thn)
-                        <option value="{{ $thn }}" {{ $thn == $tahun ? 'selected' : '' }}>{{ $thn }}</option>
+                        @foreach ($yearRange as $year)
+                        <option value="{{ $year }}" {{ $tahun == $year ? 'selected' : '' }}>{{ $year }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -349,60 +318,44 @@
 
             <div class="table-wrapper">
                 <table class="payment-table">
-                    <!-- ... HEAD dan STYLE seperti sebelumnya (tetap) ... -->
-
                     <thead>
                         <tr>
-                            <th scope="col" style="width: 5%;">No</th>
-                            <th scope="col">Nama</th>
-                            @for ($i = 1; $i <= $maxMinggu; $i++)
-                                <th scope="col" class="text-center">M{{ $i }}</th>
-                                @endfor
+                            <th>No</th>
+                            <th>Nama Siswa</th>
+                            <th>Jumlah Tunggakan (Minggu)</th> {{-- Kolom ini bisa ditampilkan untuk admin --}}
+                            <th>Total Utang (Rp)</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($siswas as $siswa)
+                        @forelse ($utangData as $index => $utang)
                         <tr>
-                            <td>{{ $loop->iteration }}</td>
-                            <td>{{ $siswa->nama }}</td>
-                            @for ($i = 1; $i <= $maxMinggu; $i++)
-                                <td class="text-center">
-                                @if ($siswa->pembayaran->firstWhere('minggu', $i)?->status)
-                                <span class="status-icon status-paid">✔</span>
-                                @else
-                                <span class="status-icon status-unpaid">✗</span>
-                                @endif
-                                </td>
-                                @endfor
+                            <td>{{ $index + 1 }}</td>
+                            <td>{{ $utang['nama'] }}</td>
+                            <td>{{ $utang['missed_payments'] }}</td> {{-- Variabel dari controller baru --}}
+                            <td>{{ number_format($utang['total_utang'], 0, ',', '.') }}</td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="{{ $maxMinggu + 2 }}" class="text-center py-5">
-                                Tidak ada data siswa untuk bulan dan tahun yang dipilih.
-                            </td>
+                            <td colspan="4" class="text-center p-4">Tidak ada data utang ditemukan untuk periode ini.</td>
                         </tr>
                         @endforelse
                     </tbody>
-
                 </table>
             </div>
 
-            @auth
-            <div class="mt-4 d-flex justify-content-end align-items-center">
-                <div class="d-flex gap-2">
-                    <a href="{{ route('dashboard') }}" class="btn btn-secondary">Kembali ke Dashboard</a>
-                </div>
+            <div class="mt-4 text-end">
+                <a href="{{ route('dashboard') }}" class="btn btn-secondary">Kembali ke Dashboard</a>
             </div>
-            @endauth
         </div>
     </main>
 
+    {{-- (Modal Logout sama seperti kode lama Anda) --}}
     <div class="modal fade" id="logoutConfirmModal" tabindex="-1" aria-labelledby="logoutConfirmModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content shadow-lg">
                 <div class="modal-header bg-danger text-white">
                     <h5 class="modal-title" id="logoutConfirmModalLabel">Konfirmasi Logout</h5>
-                    <button type="button" class="btn btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <p class="fs-5">Apakah Anda yakin akan logout?</p>
@@ -419,9 +372,7 @@
     <script>
         const confirmLogoutBtn = document.getElementById('confirmLogoutBtn');
         if (confirmLogoutBtn) {
-            confirmLogoutBtn.addEventListener('click', function() {
-                document.getElementById('logoutForm').submit();
-            });
+            confirmLogoutBtn.addEventListener('click', () => document.getElementById('logoutForm').submit());
         }
     </script>
 </body>

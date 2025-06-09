@@ -295,7 +295,7 @@
                 <div class="label">Total Kas</div>
             </div>
             <div class="stat-card">
-                <a href="{{ route('utang') }}">
+                <a href="{{ route('utang.admin') }}">
                     <div class="amount">Utang</div>
                     <div class="label">Foerda Jaya!!!</div>
                 </a>

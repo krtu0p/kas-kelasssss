@@ -5,22 +5,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Utang Siswa - Kas Foerda</title>
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
     <style>
-        /* =================================
-           Variabel & Gaya Global
-        ==================================== */
+        /* (Semua CSS sama seperti kode lama Anda) */
         :root {
             --primary-color: #56B9F1;
             --white-color: #FFFFFF;
             --dark-color: #212529;
-            /* Disesuaikan untuk header tabel */
             --text-primary: #333333;
             --text-secondary: #757575;
             --border-color: #EEEEEE;
@@ -38,9 +33,6 @@
             color: var(--text-primary);
         }
 
-        /* =================================
-           Header
-        ==================================== */
         .page-header {
             background-color: var(--primary-color);
             padding: 1.5rem 2rem;
@@ -60,63 +52,6 @@
             color: var(--white-color);
         }
 
-        /* buat tombol dropdownnya */
-        .user-profile-dropdown .user-button {
-            width: 45px;
-            height: 45px;
-            padding: 0;
-            border: 2px solid var(--white-color);
-            /* Menambahkan bingkai putih */
-            border-radius: 50%;
-            /* Membuat tombol menjadi bulat */
-            background-color: var(--primary-color);
-            color: var(--white-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-            /* Transisi untuk semua perubahan (warna, ukuran) */
-        }
-
-        .user-profile-dropdown .user-button:hover {
-            transform: scale(1.1);
-            background-color: var(--white-color);
-            /* Efek warna terbalik saat hover */
-            color: var(--primary-color);
-        }
-
-        .user-profile-dropdown .user-button .bi-person-fill {
-            font-size: 1.5rem;
-            /* Menyesuaikan ukuran ikon di dalam tombol */
-        }
-
-        .user-profile-dropdown .dropdown-menu {
-            border-radius: 0.75rem;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            border: none;
-            padding: 0.5rem;
-        }
-
-        .user-profile-dropdown .dropdown-item {
-            font-weight: 500;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-        }
-
-        .user-profile-dropdown .dropdown-item .bi {
-            margin-right: 0.5rem;
-            vertical-align: middle;
-        }
-
-        .user-profile-dropdown .dropdown-item.text-danger:hover,
-        .user-profile-dropdown .dropdown-item.text-danger:focus {
-            background-color: #fce8e8;
-            color: #b02a37 !important;
-        }
-
-        /* =================================
-           Konten Utama
-        ==================================== */
         .main-container {
             padding: 1.5rem;
         }
@@ -128,9 +63,6 @@
             margin-bottom: 2rem;
         }
 
-        /* =================================
-           Kartu Statistik
-        ==================================== */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -162,9 +94,6 @@
             color: var(--text-secondary);
         }
 
-        /* =================================
-           Container Tabel & Filter
-        ==================================== */
         .table-container {
             background-color: var(--white-color);
             padding: 2rem;
@@ -173,9 +102,6 @@
             box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.08);
         }
 
-        /* =================================
-           Form Filter
-        ==================================== */
         .filter-form {
             display: flex;
             flex-wrap: wrap;
@@ -223,13 +149,9 @@
             background-color: #3C9FDA;
         }
 
-        /* =================================
-           Tabel Utang
-        ==================================== */
         .table-wrapper {
             border-radius: 12px;
             overflow-x: auto;
-            /* Agar tabel bisa di-scroll horizontal di layar kecil */
             border: 1px solid var(--border-color);
         }
 
@@ -250,7 +172,6 @@
             text-align: left;
             vertical-align: middle;
             white-space: nowrap;
-            /* Ditambahkan agar teks tidak turun baris */
         }
 
         .payment-table tbody tr {
@@ -259,7 +180,6 @@
 
         .payment-table tbody tr:last-child {
             border-bottom: none;
-            /* Menghilangkan border di baris terakhir */
         }
 
         .payment-table tbody tr:hover {
@@ -271,24 +191,10 @@
 <body>
     <header class="page-header">
         <div class="header-title">
-            <a href="{{ route('dashboard') }}">Kas Foerda</a>
+            {{-- PERUBAHAN: Mengarah ke halaman utama siswa --}}
+            <a href="{{ route('siswa.index') }}">Kas Foerda</a>
         </div>
-        <div class="dropdown user-profile-dropdown">
-            <button class="user-button" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="User Menu">
-                <i class="bi bi-person-fill"></i>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end">
-                <li>
-                    <form id="logoutForm" method="POST" action="{{ route('logout') }}" class="m-0">
-                        @csrf
-                        <button type="button" class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#logoutConfirmModal">
-                            <i class="bi bi-box-arrow-right"></i> Logout
-                        </button>
-                    </form>
-                </li>
-            </ul>
-        </div>
-    </header>
+        {{-- Tombol Logout & Profil Admin Dihapus --}}
     </header>
 
     <main class="main-container">
@@ -312,35 +218,24 @@
                 <div class="label">Total Kas</div>
             </div>
             <div class="stat-card">
-                <a href="{{ route('utang') }}">
+                {{-- PERUBAHAN: Mengarah ke rute siswa --}}
+                <a href="{{ route('utang.siswa') }}">
                     <div class="amount">Utang</div>
-                    <div class="label">Foerda Jaya!!!</div>
+                    <div class="label">Lihat Data Utang</div>
                 </a>
             </div>
         </div>
-        
-        <div class="table-container">
-            @if (session('success'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            @endif
-            @if (session('error'))
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                {{ session('error') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            @endif
 
-            <form method="GET" action="{{ route('utang') }}" class="filter-form">
+        <div class="table-container">
+            {{-- PERUBAHAN: Action form mengarah ke rute siswa --}}
+            <form method="GET" action="{{ route('utang.siswa') }}" class="filter-form">
                 <div class="form-group">
                     <label for="bulan">Pilih Bulan</label>
                     <select name="bulan" id="bulan" class="form-select">
                         <option value="">Semua Bulan</option>
-                        @foreach ($dropdownBulan as $item)
-                        <option value="{{ $item['bulan'] }}" {{ $bulan == $item['bulan'] ? 'selected' : '' }}>
-                            {{ $item['nama'] }}
+                        @foreach ($dropdownBulan as $key => $namaBulan)
+                        <option value="{{ $key }}" {{ $bulan == $key ? 'selected' : '' }}>
+                            {{ $namaBulan }}
                         </option>
                         @endforeach
                     </select>
@@ -364,7 +259,7 @@
                         <tr>
                             <th>No</th>
                             <th>Nama Siswa</th>
-                            <th>Jumlah Tunggakan (Minggu)</th>
+                            {{-- Kolom jumlah minggu sengaja dihilangkan untuk view publik --}}
                             <th>Total Utang (Rp)</th>
                         </tr>
                     </thead>
@@ -373,51 +268,21 @@
                         <tr>
                             <td>{{ $index + 1 }}</td>
                             <td>{{ $utang['nama'] }}</td>
-                            <td>{{ $utang['missed_payments'] }}</td>
                             <td>{{ number_format($utang['total_utang'], 0, ',', '.') }}</td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="4" class="text-center p-4">Tidak ada data utang ditemukan untuk periode ini.</td>
+                            {{-- PERUBAHAN: colspan menjadi 3 --}}
+                            <td colspan="3" class="text-center p-4">Alhamdulillah! Tidak ada yang punya utang untuk periode ini.</td>
                         </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
-
-            <div class="mt-4 text-end">
-                <a href="{{ route('dashboard') }}" class="btn btn-secondary">Kembali ke Dashboard</a>
-            </div>
+            {{-- Tombol kembali ke dashboard dihapus untuk view publik --}}
         </div>
     </main>
-
-    <div class="modal fade" id="logoutConfirmModal" tabindex="-1" aria-labelledby="logoutConfirmModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content shadow-lg">
-                <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title" id="logoutConfirmModalLabel">Konfirmasi Logout</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p class="fs-5">Apakah Anda yakin akan logout?</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="button" class="btn btn-danger" id="confirmLogoutBtn">Logout</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        const confirmLogoutBtn = document.getElementById('confirmLogoutBtn');
-        if (confirmLogoutBtn) {
-            confirmLogoutBtn.addEventListener('click', function() {
-                document.getElementById('logoutForm').submit();
-            });
-        }
-    </script>
 </body>
 
 </html>

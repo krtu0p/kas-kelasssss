@@ -5,15 +5,17 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\KeuanganController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ChartController;
 
-// Halaman siswa, pemasukan, pengeluaran, dan utang bisa diakses tanpa login (view-only)
+// Halaman publik yang bisa diakses tanpa login
 Route::get('/siswa', [SiswaController::class, 'index'])->name('siswa.index');
 Route::get('/pemasukan', [KeuanganController::class, 'pemasukan'])->name('pemasukan');
 Route::get('/pengeluaran', [KeuanganController::class, 'pengeluaran'])->name('pengeluaran');
-Route::get('/utang', [KeuanganController::class, 'utang'])->name('utang');
 
-// Route untuk bendahara harus login
+// BARU: Rute khusus untuk halaman utang siswa (publik)
+Route::get('/utang-siswa', [KeuanganController::class, 'utangSiswa'])->name('utang.siswa');
+
+
+// Route untuk bendahara yang harus login
 Route::middleware('auth')->group(function () {
     // Dashboard dan manajemen pembayaran
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -35,6 +37,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/pemasukan/{id}/edit', [KeuanganController::class, 'pemasukanEdit'])->name('pemasukan.edit');
     Route::put('/pemasukan/{id}', [KeuanganController::class, 'pemasukanUpdate'])->name('pemasukan.update');
     Route::delete('/pemasukan/{id}', [KeuanganController::class, 'pemasukanDestroy'])->name('pemasukan.destroy');
+
+    // BARU: Rute khusus untuk halaman utang admin
+    Route::get('/utang-admin', [KeuanganController::class, 'utangAdmin'])->name('utang.admin');
 });
 
 // Login dan logout untuk bendahara

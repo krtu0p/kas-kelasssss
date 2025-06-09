@@ -241,10 +241,10 @@
             </div>
             <div class="stat-card">
                 <div class="amount">IDR. {{ number_format($totalKas ?? 0, 0, ',', '.') }}</div>
-                <div class="label">Total Kas Saat Ini</div>
+                <div class="label">Total Kas</div>
             </div>
             <div class="stat-card">
-                <a href="{{ route('utang') }}">
+                <a href="{{ route('utang.admin') }}">
                     <div class="amount">Utang</div>
                     <div class="label">Lihat Data Utang</div>
                 </a>
