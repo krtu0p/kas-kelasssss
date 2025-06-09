@@ -312,13 +312,13 @@
                 <div class="label">Total Kas</div>
             </div>
             <div class="stat-card">
-                <a href="#">
+                <a href="{{ route('utang') }}">
                     <div class="amount">Utang</div>
                     <div class="label">Foerda Jaya!!!</div>
                 </a>
             </div>
         </div>
-
+        
         <div class="table-container">
             @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">

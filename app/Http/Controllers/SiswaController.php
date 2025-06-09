@@ -11,18 +11,27 @@ use App\Models\Pengeluaran;
 
 class SiswaController extends Controller
 {
-    private $bulanIndo = [
-        '01' => 'Januari', '02' => 'Februari', '03' => 'Maret',
-        '04' => 'April', '05' => 'Mei', '06' => 'Juni',
-        '07' => 'Juli', '08' => 'Agustus', '09' => 'September',
-        '10' => 'Oktober', '11' => 'November', '12' => 'Desember',
-    ];
 
+        private $bulanIndo = [
+        '01' => 'Januari',
+        '02' => 'Februari',
+        '03' => 'Maret',
+        '04' => 'April',
+        '05' => 'Mei',
+        '06' => 'Juni',
+        '07' => 'Juli',
+        '08' => 'Agustus',
+        '09' => 'September',
+        '10' => 'Oktober',
+        '11' => 'November',
+        '12' => 'Desember',
+    ];
     public function index(Request $request)
     {
         $bulan = $request->input('bulan', Carbon::now()->format('m'));
         $tahun = $request->input('tahun', Carbon::now()->year);
 
+        // Ambil data siswa dan pembayaran berdasarkan bulan/tahun
         $siswas = Siswa::with(['pembayaran' => fn($query) => 
             $query->where('bulan', $bulan)->where('tahun', $tahun)
         ])->get();
@@ -31,6 +40,7 @@ class SiswaController extends Controller
             ->where('tahun', $tahun)
             ->max('minggu') ?? 0;
 
+        // Dropdown bulan & tahun
         $dropdownBulan = Pembayaran::select('bulan', 'tahun')
             ->distinct()
             ->orderByDesc('tahun')
@@ -39,30 +49,28 @@ class SiswaController extends Controller
             ->map(fn($item) => [
                 'bulan' => $item->bulan,
                 'tahun' => $item->tahun,
-                'nama' => ($this->bulanIndo[$item->bulan] ?? 'Unknown'),
+                'nama' => $this->bulanIndo[$item->bulan]
             ]);
 
         if ($dropdownBulan->isEmpty()) {
             $dropdownBulan->push([
                 'bulan' => Carbon::now()->format('m'),
                 'tahun' => Carbon::now()->year,
-                'nama' => $this->bulanIndo[Carbon::now()->format('m')],
+                'nama' => $this->bulanIndo[Carbon::now()->format('m')]
             ]);
         }
 
-
-        // DITAMBAHKAN: Logika untuk menghitung total pemasukan dan pengeluaran
+        // 💰 Hitung total pemasukan, pengeluaran, dan kas
         $totalPemasukan = Pemasukan::where('bulan', $bulan)
-                                    ->where('tahun', $tahun)
-                                    ->sum('jumlah');
+            ->where('tahun', $tahun)
+            ->sum('jumlah');
 
         $totalPengeluaran = Pengeluaran::where('bulan', $bulan)
-                                        ->where('tahun', $tahun)
-                                        ->sum('jumlah');
+            ->where('tahun', $tahun)
+            ->sum('jumlah');
 
         $totalKas = $totalPemasukan - $totalPengeluaran;
 
-        // Modifikasi 'return view' untuk mengirim data baru
         return view('siswa', [
             'siswas' => $siswas,
             'maxMinggu' => $maxMinggu,
@@ -70,9 +78,12 @@ class SiswaController extends Controller
             'tahun' => $tahun,
             'dropdownBulan' => $dropdownBulan,
             'bulanIndo' => $this->bulanIndo,
+            // 💸 Kirim variabel kas ke view
             'totalPemasukan' => $totalPemasukan,
             'totalPengeluaran' => $totalPengeluaran,
-            'totalKasData' => $totalKas,
+            'totalKas' => $totalKas,
         ]);
     }
 }
+
+

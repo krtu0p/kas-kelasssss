@@ -7,8 +7,11 @@ use App\Http\Controllers\KeuanganController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ChartController;
 
-// Halaman siswa bisa diakses tanpa login
+// Halaman siswa, pemasukan, pengeluaran, dan utang bisa diakses tanpa login (view-only)
 Route::get('/siswa', [SiswaController::class, 'index'])->name('siswa.index');
+Route::get('/pemasukan', [KeuanganController::class, 'pemasukan'])->name('pemasukan');
+Route::get('/pengeluaran', [KeuanganController::class, 'pengeluaran'])->name('pengeluaran');
+Route::get('/utang', [KeuanganController::class, 'utang'])->name('utang');
 
 // Route untuk bendahara harus login
 Route::middleware('auth')->group(function () {
@@ -19,24 +22,19 @@ Route::middleware('auth')->group(function () {
     Route::post('/pembayaran/hapus-minggu', [DashboardController::class, 'hapusMinggu'])->name('pembayaran.hapus_minggu');
     Route::post('/dashboard/tambah-bulan', [DashboardController::class, 'tambahBulan'])->name('dashboard.tambahBulan');
 
-    // Pengeluaran
-    Route::get('/pengeluaran', [KeuanganController::class, 'pengeluaran'])->name('pengeluaran');
+    // Pengeluaran CRUD
     Route::get('/pengeluaran/create', [KeuanganController::class, 'pengeluaranCreate'])->name('pengeluaran.create');
     Route::post('/pengeluaran', [KeuanganController::class, 'pengeluaranStore'])->name('pengeluaran.store');
     Route::get('/pengeluaran/{id}/edit', [KeuanganController::class, 'pengeluaranEdit'])->name('pengeluaran.edit');
     Route::put('/pengeluaran/{id}', [KeuanganController::class, 'pengeluaranUpdate'])->name('pengeluaran.update');
     Route::delete('/pengeluaran/{id}', [KeuanganController::class, 'pengeluaranDestroy'])->name('pengeluaran.destroy');
 
-    // Pemasukan
-    Route::get('/pemasukan', [KeuanganController::class, 'pemasukan'])->name('pemasukan');
+    // Pemasukan CRUD
     Route::get('/pemasukan/create', [KeuanganController::class, 'pemasukanCreate'])->name('pemasukan.create');
     Route::post('/pemasukan', [KeuanganController::class, 'pemasukanStore'])->name('pemasukan.store');
     Route::get('/pemasukan/{id}/edit', [KeuanganController::class, 'pemasukanEdit'])->name('pemasukan.edit');
     Route::put('/pemasukan/{id}', [KeuanganController::class, 'pemasukanUpdate'])->name('pemasukan.update');
     Route::delete('/pemasukan/{id}', [KeuanganController::class, 'pemasukanDestroy'])->name('pemasukan.destroy');
-
-    //Utang
-    Route::get('/utang', [KeuanganController::class, 'utang'])->name('utang');
 });
 
 // Login dan logout untuk bendahara
