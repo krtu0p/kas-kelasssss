@@ -11,14 +11,19 @@ class DatabaseSeeder extends Seeder
     /**
      * Seed the application's database.
      */
-    public function run(): void
-    {
-        $this->call(SiswaSeeder::class);
+    use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
-    }
+public function run(): void
+{
+    $this->call(SiswaSeeder::class);
+
+    DB::table('users')->insert([
+        'name' => 'Test User',
+        'email' => 'test@example.com',
+        'password' => Hash::make('password'),
+    ]);
 }
 
+
+}
