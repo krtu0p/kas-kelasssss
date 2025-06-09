@@ -1,23 +1,33 @@
 <!-- resources/views/utang.blade.php -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Utang Siswa</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        .form-container {
-            max-width: 100%;
-        }
-        .table-responsive {
-            margin-top: 20px;
-        }
+        .form-container { max-width: 600px; }
+        .table-responsive { max-height: 500px; overflow-y: auto; }
     </style>
 </head>
-<body>
-    <div class="container mt-4">
+<body class="bg-light">
+    <div class="container py-5">
         <h1>Data Utang Siswa</h1>
+
+        <!-- Flash Messages -->
+        @if (session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+        @if (session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
 
         <!-- Filter Form -->
         <form method="GET" action="{{ route('utang') }}" class="mb-4 form-container d-flex gap-3 align-items-end">
@@ -25,8 +35,8 @@
                 <label for="bulan" class="form-label">Pilih Bulan</label>
                 <select name="bulan" id="bulan" class="form-select" required>
                     <option value="">Semua Bulan</option>
-                    @foreach ($dropdownBulan as $key => $namaBulan)
-                        <option value="{{ $key }}" {{ $bulan == $key ? 'selected' : '' }}>{{ $namaBulan }}</option>
+                    @foreach ($dropdownBulan as $item)
+                        <option value="{{ $item['bulan'] }}" {{ $bulan == $item['bulan'] ? 'selected' : '' }}>{{ $item['nama'] }}</option>
                     @endforeach
                 </select>
             </div>
@@ -39,7 +49,7 @@
                 </select>
             </div>
             <div>
-                <button type="submit" class="btn btn-primary">Filter</button>
+                <button type="submit" class="btn btn-primary">Lihat</button>
             </div>
         </form>
 
@@ -50,7 +60,7 @@
                     <tr>
                         <th scope="col">No</th>
                         <th scope="col">Nama Siswa</th>
-                        <th scope="col">Jumlah Tunggakan (Bulan)</th>
+                        <th scope="col">Jumlah Tunggakan (Minggu)</th>
                         <th scope="col">Total Utang (Rp)</th>
                     </tr>
                 </thead>
@@ -69,6 +79,14 @@
                     @endforelse
                 </tbody>
             </table>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="text-center mt-4">
+            <a href="{{ route('dashboard') }}" class="btn btn-secondary">Dashboard</a>
+            <a href="{{ route('siswa.index') }}" class="btn btn-secondary mx-2">Lihat Halaman Siswa</a>
+            <a href="{{ route('pemasukan') }}" class="btn btn-success mx-2">Pemasukan</a>
+            <a href="{{ route('pengeluaran') }}" class="btn btn-danger">Pengeluaran</a>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
