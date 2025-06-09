@@ -32,6 +32,11 @@
             color: var(--text-primary);
         }
 
+        a {
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+        
         /* =================================
            Header
         ==================================== */
@@ -76,7 +81,7 @@
         .content-title {
             font-size: 1.75rem;
             font-weight: 700;
-            color: var(--primary-color); /* Diubah agar kontras dengan background gelap */
+            color: var(--primary-color);
             margin-bottom: 2rem;
         }
 
@@ -225,20 +230,26 @@
 
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="amount">IDR. {{ number_format($totalPemasukan ?? 0, 0, ',', '.') }}</div>
+                <a href="{{ route('pemasukan') }}">
+                    <div class="amount">IDR. {{ number_format($totalPemasukan ?? 0, 0, ',', '.') }}</div>
                 <div class="label">Pemasukan</div>
+                </a>
             </div>
             <div class="stat-card">
-                <div class="amount">IDR. {{ number_format($totalPengeluaran ?? 0, 0, ',', '.') }}</div>
-                <div class="label">Pengeluaran</div>
+                <a href="{{ route('pengeluaran') }}">
+                    <div class="amount">IDR. {{ number_format($totalPengeluaran ?? 0, 0, ',', '.') }}</div>
+                    <div class="label">Pengeluaran</div>
+                </a>
             </div>
             <div class="stat-card">
                 <div class="amount">IDR. {{ number_format($totalKasData ?? 0, 0, ',', '.') }}</div>
                 <div class="label">Total Kas</div>
             </div>
             <div class="stat-card">
-                <div class="amount">Utang</div>
-                <div class="label">Foerda Jaya!!!</div>
+                <a href="{{ route('utang') }}">
+                    <div class="amount">Utang</div>
+                    <div class="label">Foerda Jaya!!!</div>
+                </a>
             </div>
         </div>
 
@@ -312,6 +323,11 @@
                 </table>
             </div>
 
+            <div class="mt-4 d-flex justify-content-end align-items-center">
+                <div class="d-flex gap-2">
+                    <a href="{{ route('dashboard') }}" class="btn btn-secondary">Kembali ke Dashboard</a>
+                </div>
+            </div>
         </div> 
     </main>
 

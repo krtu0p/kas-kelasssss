@@ -19,16 +19,31 @@ class KeuanganController extends Controller
     ];
 
     // Pengeluaran
+       // GANTI SELURUH METHOD INI DI KeuanganController.php
     public function pengeluaran(Request $request)
     {
         $bulan = $request->input('bulan', Carbon::now()->format('m'));
         $tahun = $request->input('tahun', Carbon::now()->year);
 
         $pengeluaran = Pengeluaran::where('bulan', $bulan)
+            ->where('tahun', '>=', $tahun) // Perbaikan: seharusnya where('tahun', $tahun)
             ->where('tahun', $tahun)
+            ->orderBy('tanggal', 'desc') // Mengurutkan agar data terbaru di atas
             ->get();
 
+        // --- Perhitungan untuk Kartu Statistik ---
+        // 1. Hitung total pengeluaran (sudah ada)
         $totalPengeluaran = $pengeluaran->sum('jumlah');
+
+        // 2. DITAMBAHKAN: Hitung total pemasukan untuk periode yang sama
+        $totalPemasukan = Pemasukan::where('bulan', $bulan)
+            ->where('tahun', $tahun)
+            ->sum('jumlah');
+
+        // 3. DITAMBAHKAN: Hitung total kas (saldo)
+        $totalKas = $totalPemasukan - $totalPengeluaran;
+        // --- Akhir Perhitungan Kartu Statistik ---
+
 
         // Fetch distinct months with data for the selected year
         $dropdownBulan = Pengeluaran::select('bulan')
@@ -42,7 +57,7 @@ class KeuanganController extends Controller
         // Fetch distinct years with data
         $yearRange = Pengeluaran::select('tahun')
             ->distinct()
-            ->orderBy('tahun', 'asc')
+            ->orderBy('tahun', 'desc') // Diubah ke desc agar tahun terbaru di atas
             ->pluck('tahun')
             ->toArray();
 
@@ -57,14 +72,19 @@ class KeuanganController extends Controller
             $dropdownBulan = collect([$bulan => $this->bulanIndo[$bulan]]);
         }
 
-        return view('pengeluaran', [
+        // --- Kirim semua data yang dibutuhkan ke view ---
+        return view('pengeluaran_siswa', [
             'pengeluaran' => $pengeluaran,
-            'totalPengeluaran' => $totalPengeluaran,
             'bulan' => $bulan,
             'tahun' => $tahun,
             'dropdownBulan' => $dropdownBulan,
             'yearRange' => $yearRange,
             'bulanIndo' => $this->bulanIndo,
+            
+            // Variabel BARU untuk kartu statistik
+            'totalPengeluaran' => $totalPengeluaran,
+            'totalPemasukan' => $totalPemasukan,
+            'totalKas' => $totalKas,
         ]);
     }
 
@@ -153,53 +173,79 @@ class KeuanganController extends Controller
         }
     }
 
-    // Pemasukan
+    // Method Pemasukan yang menjadi pusat data untuk halaman Pemasukan Kas
     public function pemasukan(Request $request)
     {
+        // --- Langkah 1: Ambil filter bulan dan tahun ---
         $bulan = $request->input('bulan', Carbon::now()->format('m'));
         $tahun = $request->input('tahun', Carbon::now()->year);
 
+        // --- Langkah 2: Ambil daftar pemasukan sesuai filter ---
         $pemasukan = Pemasukan::where('bulan', $bulan)
             ->where('tahun', $tahun)
+            ->orderBy('tanggal', 'desc') // Diurutkan agar data terbaru di atas
             ->get();
 
+        // --- Langkah 3: Hitung data untuk kartu statistik ---
         $totalPemasukan = $pemasukan->sum('jumlah');
+        
+        // DITAMBAHKAN: Ambil juga total pengeluaran untuk periode yang sama
+        $totalPengeluaran = Pengeluaran::where('bulan', $bulan)
+            ->where('tahun', $tahun)
+            ->sum('jumlah');
+            
+        // DITAMBAHKAN: Hitung total kas (saldo)
+        $totalKas = $totalPemasukan - $totalPengeluaran;
 
-        // Fetch distinct months with data for the selected year
+        // --- Langkah 4: Siapkan data untuk dropdown filter ---
+        // (Logika ini hampir sama dengan kode asli Anda, hanya sedikit penyederhanaan)
         $dropdownBulan = Pemasukan::select('bulan')
             ->distinct()
             ->where('tahun', $tahun)
             ->pluck('bulan')
-            ->mapWithKeys(function ($bulan) {
-                return [$bulan => $this->bulanIndo[$bulan]];
-            });
+            ->sort()
+            ->mapWithKeys(fn ($b) => [$b => $this->bulanIndo[$b] ?? 'Bulan Tidak Valid']);
 
-        // Fetch distinct years with data
         $yearRange = Pemasukan::select('tahun')
             ->distinct()
-            ->orderBy('tahun', 'asc')
+            ->orderBy('tahun', 'desc')
             ->pluck('tahun')
             ->toArray();
-
-        // If no years with data, default to current year
+        
         if (empty($yearRange)) {
             $yearRange = [Carbon::now()->year];
         }
-
-        // If no data for the selected year, set a default month (e.g., current month) if no selection
         if ($dropdownBulan->isEmpty() && !$request->has('bulan')) {
-            $bulan = Carbon::now()->format('m');
-            $dropdownBulan = collect([$bulan => $this->bulanIndo[$bulan]]);
+             $dropdownBulan = collect([$bulan => $this->bulanIndo[$bulan]]);
         }
 
-        return view('pemasukan', [
+        // --- Langkah 5: DITAMBAHKAN - Siapkan data untuk Chart.js ---
+        // (Ini adalah logika yang kita "pinjam" dari ChartController)
+        $chartLabels = ['Pemasukan', 'Pengeluaran', 'Total'];
+        $chartPemasukan = [$totalPemasukan];
+        $chartPengeluaran = [$totalPengeluaran];
+        $chartTotalKas = [$totalKas];
+
+        // --- Langkah 6: Kirim semua data yang dibutuhkan ke view ---
+        return view('pemasukan_siswa', [ // Pastikan nama view sudah benar
+            // Data untuk daftar & filter
             'pemasukan' => $pemasukan,
-            'totalPemasukan' => $totalPemasukan,
             'bulan' => $bulan,
             'tahun' => $tahun,
             'dropdownBulan' => $dropdownBulan,
             'yearRange' => $yearRange,
             'bulanIndo' => $this->bulanIndo,
+            
+            // Data untuk kartu statistik
+            'totalPemasukan' => $totalPemasukan,
+            'totalPengeluaran' => $totalPengeluaran,
+            'totalKas' => $totalKas,
+
+            // Data untuk chart
+            'labels' => $chartLabels,
+            'pemasukanData' => $chartPemasukan,
+            'pengeluaranData' => $chartPengeluaran,
+            'totalKasData' => $chartTotalKas,
         ]);
     }
 
