@@ -11,25 +11,39 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
     <style>
-        /* Mengadopsi gaya dari File B untuk konsistensi */
         :root {
             --primary-color: #56B9F1;
-            --dark-color: #121212;
-            --light-dark-color: #1E1E1E;
             --white-color: #FFFFFF;
+            --dark-color: #212529;
             --text-primary: #333333;
             --text-secondary: #757575;
-            --border-color: #EEEEEE;
+            --border-color: #DEE2E6;
+            --body-bg: #f8f9fa;
+
+            /* DITAMBAHKAN: Warna untuk tombol aksi dari Anda */
+            --edit-bg-color: #FFF4D4;
+            --edit-icon-color: #F79009;
+            --delete-bg-color: #FEF3F2;
+            --delete-icon-color: #F04438;
         }
 
         body {
             font-family: 'Montserrat', sans-serif;
-            background-color: var(--light-dark-color);
-            /* Latar belakang gelap */
+            background-color: var(--body-bg);
             color: var(--text-primary);
         }
 
+        a {
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        /* =================================
+          Header
+        ==================================== */
         .page-header {
             background-color: var(--primary-color);
             padding: 1.5rem 2rem;
@@ -37,6 +51,7 @@
             justify-content: space-between;
             align-items: center;
             color: var(--white-color);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .page-header .header-title {
@@ -44,6 +59,12 @@
             font-weight: 700;
         }
 
+        .page-header .header-title a {
+            text-decoration: none;
+            color: var(--white-color);
+        }
+
+        /* DITAMBAHKAN: Animasi untuk Tombol User */
         .page-header .user-button {
             background-color: var(--white-color);
             color: var(--primary-color);
@@ -51,11 +72,20 @@
             border-radius: 999px;
             padding: 0.5rem 1.5rem;
             font-weight: 600;
+            transition: transform 0.2s ease;
+            /* Transisi ditambahkan */
         }
 
-        /* PERUBAHAN: Menghilangkan grid, menggunakan padding seperti File B */
+        .user-button:hover {
+            transform: scale(1.05);
+            /* Efek zoom saat hover */
+        }
+
+        /* =================================
+          Konten Utama
+        ==================================== */
         .main-container {
-            padding: 2rem;
+            padding: 1.5rem;
         }
 
         .content-title {
@@ -65,20 +95,34 @@
             margin-bottom: 2rem;
         }
 
+        /* =================================
+          Kartu Statistik
+        ==================================== */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1.5rem;
+            margin-bottom: 2.5rem;
         }
 
+        /* DIPERBAIKI: Animasi untuk Kartu Statistik */
         .stat-card {
             background-color: var(--white-color);
             border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 1.5rem;
-            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
             text-decoration: none;
             color: var(--text-primary);
+            transition: all 0.3s ease;
+            /* Transisi ditambahkan */
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            /* Efek melayang */
+            box-shadow: 0 8px 20px rgba(86, 185, 241, 0.2);
+            /* Efek bayangan */
         }
 
         .stat-card .amount {
@@ -92,157 +136,359 @@
             color: var(--text-secondary);
         }
 
-        /* Kontainer untuk filter dan daftar pemasukan */
-        .pemasukan-container {
+        /* =================================
+          Kontainer Konten & Filter
+        ==================================== */
+        .content-container {
             background-color: var(--white-color);
             padding: 2rem;
             border-radius: 16px;
-            margin-top: 2.5rem;
-            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
         }
 
         .filter-form {
             display: flex;
             gap: 1rem;
-            align-items: center;
+            align-items: flex-end;
             margin-bottom: 2rem;
+            flex-wrap: wrap;
         }
 
-        .filter-form .form-select-custom {
-            appearance: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            background-color: #F3F4F6;
-            border: 1px solid #E5E7EB;
-            border-radius: 999px;
-            padding: 0.5rem 2.5rem 0.5rem 1rem;
+        .filter-form .form-group {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .filter-form label {
             font-weight: 500;
-            color: #374151;
-            cursor: pointer;
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-            background-position: right 0.75rem center;
-            background-repeat: no-repeat;
-            background-size: 1.25em 1.25em;
+            margin-bottom: 0.5rem;
+            display: block;
         }
 
-        .filter-form .btn-lihat {
+        /* DITAMBAHKAN: Animasi untuk Tombol Filter */
+        .filter-form .btn-primary {
             background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+
+        .filter-form .btn-primary:hover {
+            background-color: #3C9FDA;
+            /* Warna sedikit lebih gelap saat hover */
+            border-color: #3C9FDA;
+        }
+
+        /* =================================
+          Tabel
+        ==================================== */
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        .custom-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .custom-table thead {
+            background-color: var(--dark-color);
             color: var(--white-color);
-            border: none;
-            border-radius: 999px;
-            padding: 0.5rem 1.5rem;
-            font-weight: 600;
         }
 
-        .pemasukan-list {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
+        .custom-table th,
+        .custom-table td {
+            padding: 1rem;
+            vertical-align: middle;
+            border-bottom: 1px solid var(--border-color);
         }
 
-        .pemasukan-item {
-            display: flex;
-            justify-content: space-between;
+        /* DIPERBAIKI: Transisi halus pada baris tabel */
+        .custom-table tbody tr {
+            transition: background-color 0.2s ease;
+            /* Transisi ditambahkan */
+        }
+
+        .custom-table tbody tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        /* LANGKAH 2: DITAMBAHKAN - Gaya CSS untuk Tombol Aksi Baru */
+        .action-btn {
+            display: inline-flex;
             align-items: center;
-            padding: 1rem 1.5rem;
-            background-color: var(--white-color);
-            border: 1px solid #E5E7EB;
-            border-radius: 12px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
-            color: #333;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            border: none;
+            border-radius: 8px;
+            /* Membuat sudut lebih rounded */
+            font-size: 18px;
+            /* Ukuran ikon */
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .pemasukan-item .info .amount {
-            font-size: 1.25rem;
-            font-weight: 600;
+        .action-btn:hover {
+            transform: scale(1.1);
+            /* Efek zoom saat disentuh mouse */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-        .pemasukan-item .info .title {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
+        .action-btn-edit {
+            background-color: var(--edit-bg-color);
+            color: var(--edit-icon-color);
         }
 
-        /* DITAMBAHKAN: Gaya untuk kontainer chart */
-        .chart-container {
-            background-color: var(--white-color);
-            padding: 2rem;
-            border-radius: 16px;
-            margin-top: 2.5rem;
-            /* Jarak dari panel pemasukan */
-            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.08);
-            height: 450px;
-            /* Memberi tinggi agar chart terlihat baik */
+        .action-btn-delete {
+            background-color: var(--delete-bg-color);
+            color: var(--delete-icon-color);
         }
     </style>
 </head>
 
 <body>
-
     <header class="page-header">
-        <div class="header-title">Kas Foerda</div>
+        <div class="header-title">
+            <a href="{{ route('dashboard') }}">Kas Foerda</a>
+        </div>
         <button class="user-button">User</button>
     </header>
 
     <main class="main-container">
-        <h1 class="content-title">Pemasukan Kas</h1>
+        <h1 class="content-title">Data Pemasukan Kas</h1>
 
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="amount">IDR. {{ number_format($totalPemasukan ?? 0, 0, ',', '.') }}</div>
-                <div class="label">Pemasukan</div>
+                <a href="{{ route('pemasukan') }}">
+                    <div class="amount">IDR. {{ number_format($totalPemasukan ?? 0, 0, ',', '.') }}</div>
+                    <div class="label">Pemasukan</div>
+                </a>
             </div>
             <div class="stat-card">
-                <div class="amount">IDR. {{ number_format($totalPengeluaran ?? 0, 0, ',', '.') }}</div>
-                <div class="label">Pengeluaran</div>
+                <a href="{{ route('pengeluaran') }}">
+                    <div class="amount">IDR. {{ number_format($totalPengeluaran ?? 0, 0, ',', '.') }}</div>
+                    <div class="label">Pengeluaran</div>
+                </a>
             </div>
             <div class="stat-card">
                 <div class="amount">IDR. {{ number_format($totalKas ?? 0, 0, ',', '.') }}</div>
                 <div class="label">Total Kas</div>
             </div>
             <div class="stat-card">
-                <div class="amount">Daftar Siswa</div>
-                <div class="label">Foerda Jaya!!!</div>
+                <a href="{{ route('utang') }}">
+                    <div class="amount">Utang</div>
+                    <div class="label">Foerda Jaya!!!</div>
+                </a>
             </div>
         </div>
 
-        <div class="pemasukan-container">
+        <div class="content-container">
+            @if (session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            @endif
+            @if (session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            @endif
+
+            {{-- ======================= PERBAIKAN DI SINI ======================= --}}
             <form method="GET" action="{{ route('pemasukan') }}" class="filter-form">
-                <select name="bulan" id="bulan" class="form-select-custom">
-                    @foreach ($dropdownBulan as $key => $value)
-                    <option value="{{ $key }}" {{ $key == $bulan ? 'selected' : '' }}>{{ $value }}</option>
-                    @endforeach
-                </select>
-                <select name="tahun" id="tahun" class="form-select-custom">
-                    @foreach ($yearRange as $year)
-                    <option value="{{ $year }}" {{ $year == $tahun ? 'selected' : '' }}>{{ $year }}</option>
-                    @endforeach
-                </select>
-                <button type="submit" class="btn btn-lihat">Lihat</button>
-            </form>
-
-            @if (session('success')) <div class="alert alert-success">{{ session('success') }}</div> @endif
-
-            <div class="pemasukan-list">
-                @forelse ($pemasukan as $item)
-                <div class="pemasukan-item">
-                    <div class="info">
-                        <div class="amount">IDR. {{ number_format($item->jumlah, 0, ',', '.') }}</div>
-                        <div class="title">{{ $item->nama }} - {{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}</div>
-                    </div>
+                <div class="form-group">
+                    <label for="bulan">Pilih Bulan</label>
+                    {{-- Atribut onchange="this.form.submit()" telah dihapus dari sini --}}
+                    <select name="bulan" id="bulan" class="form-select">
+                        @foreach ($dropdownBulan as $key => $value)
+                        <option value="{{ $key }}" {{ $key == $bulan ? 'selected' : '' }}>{{ $value }}</option>
+                        @endforeach
+                    </select>
                 </div>
-                @empty
-                <div class="text-center p-5 text-secondary">Tidak ada data pemasukan untuk periode ini.</div>
-                @endforelse
+                <div class="form-group">
+                    <label for="tahun">Tahun</label>
+                    {{-- Atribut onchange="this.form.submit()" telah dihapus dari sini --}}
+                    <select name="tahun" id="tahun" class="form-select">
+                        @foreach ($yearRange as $year)
+                        <option value="{{ $year }}" {{ $year == $tahun ? 'selected' : '' }}>{{ $year }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <button type="submit" class="btn btn-primary" @if ($dropdownBulan->isEmpty()) disabled @endif>Lihat</button>
+                </div>
+            </form>
+            {{-- ======================= AKHIR PERBAIKAN ======================= --}}
+
+            <div class="table-wrapper">
+                <table class="table custom-table">
+                    <thead>
+                        <tr>
+                            <th>Nama Pemasukan</th>
+                            <th>Jumlah</th>
+                            <th>Tanggal</th>
+                            <th></th> <!-- Gak usah ditambah sesuatu cok -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($pemasukan as $item)
+                        <tr>
+                            <td>{{ $item->nama }}</td>
+                            <td>IDR. {{ number_format($item->jumlah, 0, ',', '.') }}</td>
+                            <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d F Y') }}</td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    <button type="button" class="action-btn action-btn-edit" title="Edit"
+                                        data-bs-toggle="modal" data-bs-target="#editPemasukanModal"
+                                        data-id="{{ $item->id }}"
+                                        data-nama="{{ $item->nama }}"
+                                        data-jumlah="{{ $item->jumlah }}"
+                                        data-tanggal="{{ \Carbon\Carbon::parse($item->tanggal)->format('Y-m-d') }}">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </button>
+                                    <button type="button" class="action-btn action-btn-delete" title="Hapus"
+                                        data-bs-toggle="modal" data-bs-target="#hapusPemasukanModal"
+                                        data-id="{{ $item->id }}">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="4" class="text-center p-4 text-secondary">Tidak ada data pemasukan untuk periode ini.</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-4 d-flex justify-content-end align-items-center">
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#tambahPemasukanModal">
+                        Tambah Pemasukan
+                    </button>
+                    <a href="{{ route('dashboard') }}" class="btn btn-secondary">Kembali ke Dashboard</a>
+                </div>
             </div>
         </div>
-
-        <div class="chart-container">
-            @include('chart')
-        </div>
-
     </main>
 
+    <div class="modal fade" id="tambahPemasukanModal" tabindex="-1" aria-labelledby="tambahPemasukanModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-light shadow">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title" id="tambahPemasukanModalLabel">Tambah Pemasukan</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                </div>
+                <form method="POST" action="{{ route('pemasukan.store') }}">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="tambah_nama" class="form-label">Nama Pemasukan</label>
+                            <input type="text" name="nama" id="tambah_nama" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="tambah_jumlah" class="form-label">Jumlah (Rp)</label>
+                            <input type="number" name="jumlah" id="tambah_jumlah" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="tambah_tanggal" class="form-label">Tanggal</label>
+                            <input type="date" name="tanggal" id="tambah_tanggal" class="form-control" value="{{ now()->format('Y-m-d') }}" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-success">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="editPemasukanModal" tabindex="-1" aria-labelledby="editPemasukanModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-light shadow">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title" id="editPemasukanModalLabel">Edit Pemasukan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                </div>
+                <form id="editPemasukanForm" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="edit_nama" class="form-label">Nama Pemasukan</label>
+                            <input type="text" name="nama" id="edit_nama" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_jumlah" class="form-label">Jumlah (Rp)</label>
+                            <input type="number" name="jumlah" id="edit_jumlah" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_tanggal" class="form-label">Tanggal</label>
+                            <input type="date" name="tanggal" id="edit_tanggal" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-warning">Simpan Perubahan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="hapusPemasukanModal" tabindex="-1" aria-labelledby="hapusPemasukanModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-light shadow">
+                <div class="modal-header bg-danger text-white">
+                    <h1 class="modal-title fs-5" id="hapusPemasukanModalLabel">Konfirmasi Hapus</h1>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="hapusPemasukanForm" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <div class="modal-body">
+                        <p>Apakah Anda yakin ingin menghapus data pemasukan ini secara permanen?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-danger">Hapus</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const editPemasukanModal = document.getElementById('editPemasukanModal');
+        editPemasukanModal.addEventListener('show.bs.modal', event => {
+            const button = event.relatedTarget;
+            const id = button.getAttribute('data-id');
+            const nama = button.getAttribute('data-nama');
+            const jumlah = button.getAttribute('data-jumlah');
+            const tanggal = button.getAttribute('data-tanggal');
+
+            const form = document.getElementById('editPemasukanForm');
+            form.action = `{{ url('pemasukan') }}/${id}`;
+
+            document.getElementById('edit_nama').value = nama;
+            document.getElementById('edit_jumlah').value = jumlah;
+            document.getElementById('edit_tanggal').value = tanggal;
+        });
+
+        const hapusPemasukanModal = document.getElementById('hapusPemasukanModal');
+        hapusPemasukanModal.addEventListener('show.bs.modal', event => {
+            const button = event.relatedTarget;
+            const id = button.getAttribute('data-id');
+            const form = document.getElementById('hapusPemasukanForm');
+            form.action = `{{ url('pemasukan') }}/${id}`;
+        });
+    </script>
 </body>
 
 </html>

@@ -35,9 +35,6 @@ Route::middleware('auth')->group(function () {
     Route::put('/pemasukan/{id}', [KeuanganController::class, 'pemasukanUpdate'])->name('pemasukan.update');
     Route::delete('/pemasukan/{id}', [KeuanganController::class, 'pemasukanDestroy'])->name('pemasukan.destroy');
 
-    // Chart Keuangan
-    Route::get('/chart', [ChartController::class, 'index'])->name('chart.index');
-
     //Utang
     Route::get('/utang', [KeuanganController::class, 'utang'])->name('utang');
 });

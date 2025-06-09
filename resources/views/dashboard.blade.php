@@ -22,18 +22,15 @@
             --border-color: #EEEEEE;
             --body-bg: #f8f9fa;
         }
-
         body {
             font-family: 'Montserrat', sans-serif;
             background-color: var(--body-bg);
             color: var(--text-primary);
         }
-
         a {
             text-decoration: none;
             color: var(--text-primary);
         }
-
         .page-header {
             background-color: var(--primary-color);
             padding: 1.5rem 2rem;
@@ -43,43 +40,70 @@
             color: var(--white-color);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-
         .page-header .header-title {
             font-size: 1.75rem;
             font-weight: 700;
         }
-
         .page-header .header-title a {
             text-decoration: none;
             color: var(--white-color);
         }
-
-        .page-header .user-button {
+        .user-profile-dropdown .user-button {
+            width: 45px;
+            height: 45px;
+            padding: 0;
+            border: 2px solid var(--white-color);
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        .user-profile-dropdown .user-button:hover {
+            transform: scale(1.1);
             background-color: var(--white-color);
             color: var(--primary-color);
+        }
+        .user-profile-dropdown .user-button .bi-person-fill {
+            font-size: 1.5rem;
+        }
+        .user-profile-dropdown .dropdown-menu {
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             border: none;
-            border-radius: 999px;
-            padding: 0.5rem 1.5rem;
-            font-weight: 600;
-            transition: transform 0.2s ease;
+            padding: 0.5rem;
         }
-
-        .user-button:hover {
-            transform: scale(1.05);
+        .user-profile-dropdown .dropdown-item {
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
         }
-
-        /* PERBAIKAN: Padding pada .main-container dihapus dari sini dan dipindahkan ke kelas Bootstrap untuk membuatnya responsif */
+        .user-profile-dropdown .dropdown-item .bi {
+            margin-right: 0.5rem;
+            vertical-align: middle;
+        }
+        .user-profile-dropdown .dropdown-item.text-danger:hover,
+        .user-profile-dropdown .dropdown-item.text-danger:focus {
+            background-color: #f8d7da;
+            color: #721c24 !important;
+        }
         .main-container {
-            /* padding: 2.5rem; */
+            /* Padding dipindahkan ke kelas Bootstrap untuk responsivitas */
         }
-
+        .content-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 2rem;
+        }
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2.5rem;
         }
-
         .stat-card {
             background-color: var(--white-color);
             border-radius: 12px;
@@ -87,37 +111,31 @@
             transition: all 0.3s ease;
             box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.07);
         }
-
         .stat-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 8px 25px rgba(86, 185, 241, 0.2);
         }
-
         .stat-card .amount {
             font-size: 1.6rem;
             font-weight: 700;
             margin-bottom: 0.25rem;
         }
-
         .stat-card .label {
             font-size: 0.9rem;
             color: var(--text-secondary);
         }
-
         .table-container {
             background-color: var(--white-color);
             padding: 2rem;
             border-radius: 16px;
             box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.08);
         }
-
         .filter-form label {
             font-weight: 600;
             font-size: 0.9rem;
             margin-bottom: 0.5rem;
             display: block;
         }
-
         .btn-lihat {
             background-color: var(--primary-color);
             color: var(--white-color);
@@ -125,72 +143,58 @@
             font-weight: 600;
             transition: background-color 0.2s ease;
         }
-
         .btn-lihat:hover {
             background-color: #3C9FDA;
             color: var(--white-color);
         }
-
         .payment-table {
             width: 100%;
             border-collapse: collapse;
         }
-
         table.payment-table thead th {
             background-color: #000000;
-            /* Warna hitam pekat */
             color: var(--white-color);
         }
-
-        .payment-table th,
-        .payment-table td {
+        .payment-table th, .payment-table td {
             padding: 1rem;
             text-align: left;
             vertical-align: middle;
             border-bottom: 1px solid var(--border-color);
         }
-
-        .payment-table th:not(:first-child),
-        .payment-table td:not(:first-child) {
+        /* PERBAIKAN: Menyesuaikan perataan teks setelah kolom 'No' ditambahkan */
+        .payment-table th:first-child,
+        .payment-table td:first-child {
             text-align: center;
+            width: 1%; /* Membuat kolom 'No' tidak terlalu lebar */
         }
-
+        .payment-table th:nth-child(n+3),
+        .payment-table td:nth-child(n+3) {
+            text-align: center; /* Membuat kolom M1, M2, dst tetap di tengah */
+        }
         .payment-table tbody tr:hover {
             background-color: #F9FAFB;
         }
-
         .payment-table .form-check-input {
             transform: scale(1.4);
             cursor: pointer;
         }
-
-        /* PERBAIKAN: Media Query untuk layar kecil (di bawah 768px) */
         @media (max-width: 767.98px) {
             .main-container {
                 padding: 1.5rem;
-                /* Padding lebih kecil di mobile */
             }
-
             .page-header {
                 padding: 1rem;
                 flex-direction: column;
-                /* Susun ke bawah di mobile */
                 gap: 0.5rem;
             }
-
             .page-header .header-title {
                 font-size: 1.4rem;
-                /* Ukuran font lebih kecil */
             }
-
             .table-container {
                 padding: 1rem;
-                /* Padding lebih kecil di mobile */
             }
-
             .stat-card .amount {
                 font-size: 1.4rem;
-                /* Ukuran font lebih kecil */
             }
         }
     </style>
@@ -201,15 +205,27 @@
         <div class="header-title">
             <a href="{{ route('dashboard') }}">Kas Foerda</a>
         </div>
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <button type="submit" class="user-button">Logout</button>
-        </form>
+        
+        <div class="dropdown user-profile-dropdown">
+            <button class="user-button" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="User Menu">
+                <i class="bi bi-person-fill"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                    <form id="logoutForm" method="POST" action="{{ route('logout') }}" class="m-0">
+                        @csrf
+                        <button type="button" class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#logoutConfirmModal">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </button>
+                    </form>
+                </li>
+            </ul>
+        </div>
     </header>
 
-    {{-- PERBAIKAN: Menggunakan kelas padding responsif dari Bootstrap --}}
-    <main class="main-container p-3 p-md-4 p-lg-5">
-
+    <main class="main-container p-md-4">
+        <h1 class="content-title">Dashboard Pembayaran Kas</h1>
+        
         <div class="stats-grid">
             <div class="stat-card">
                 <a href="{{ route('pemasukan') }}">
@@ -236,8 +252,6 @@
         </div>
 
         <div class="table-container">
-            <h2 class="mb-4 fw-bold">Dashboard Pembayaran Kas Kelas</h2>
-
             @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 {{ session('success') }}
@@ -251,13 +265,12 @@
             </div>
             @endif
 
-            {{-- PERBAIKAN: Menggunakan Grid System Bootstrap untuk form filter --}}
             <form method="GET" action="{{ route('dashboard') }}" class="mb-4">
                 <div class="row g-3 align-items-end">
                     <div class="col-12 col-sm-6 col-md-5">
                         <label for="bulan" class="form-label fw-bold">Pilih Bulan</label>
                         <select name="bulan" id="bulan" class="form-select" required>
-                            @foreach ($dropdownBulan as $item)
+                             @foreach ($dropdownBulan as $item)
                             <option value="{{ $item['bulan'] }}" {{ $item['bulan'] == $bulan ? 'selected' : '' }}>
                                 {{ $item['nama'] }}
                             </option>
@@ -267,7 +280,7 @@
                     <div class="col-12 col-sm-6 col-md-5">
                         <label for="tahun" class="form-label fw-bold">Pilih Tahun</label>
                         <select name="tahun" id="tahun" class="form-select" required>
-                            @foreach ($dropdownBulan->pluck('tahun')->unique()->sortDesc() as $thn)
+                             @foreach ($dropdownBulan->pluck('tahun')->unique()->sortDesc() as $thn)
                             <option value="{{ $thn }}" {{ $thn == $tahun ? 'selected' : '' }}>{{ $thn }}</option>
                             @endforeach
                         </select>
@@ -287,26 +300,31 @@
                     <table class="table payment-table mb-0">
                         <thead>
                             <tr>
+                                {{-- PERBAIKAN 1: Tambahkan header kolom 'No.' --}}
+                                <th scope="col">No</th>
                                 <th scope="col" class="ps-3">Nama Siswa</th>
                                 @for ($i = 1; $i <= $maxMinggu; $i++)
-                                    <th scope="col">M{{ $i }}</th>
-                                    @endfor
+                                <th scope="col">M{{ $i }}</th>
+                                @endfor
                             </tr>
                         </thead>
                         <tbody>
                             @forelse ($siswas as $siswa)
                             <tr>
+                                {{-- PERBAIKAN 2: Tambahkan sel data untuk nomor urut --}}
+                                <td>{{ $loop->iteration }}</td>
                                 <td class="ps-3">{{ $siswa->nama }}</td>
                                 @for ($i = 1; $i <= $maxMinggu; $i++)
-                                    <td>
+                                <td>
                                     <input type="checkbox" name="pembayaran[{{ $siswa->id }}][]" value="{{ $i }}" class="form-check-input"
                                         {{ $siswa->pembayaran->firstWhere('minggu', $i)?->status ? 'checked' : '' }}>
-                                    </td>
-                                    @endfor
+                                </td>
+                                @endfor
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="{{ $maxMinggu + 1 }}" class="text-center py-5">
+                                {{-- PERBAIKAN 3: Sesuaikan colspan --}}
+                                <td colspan="{{ $maxMinggu + 2 }}" class="text-center py-5">
                                     <p class="mb-1 fs-5 text-secondary">Tidak ada data siswa.</p>
                                     <small>Silakan tambahkan data siswa terlebih dahulu di halaman siswa.</small>
                                 </td>
@@ -317,41 +335,40 @@
                 </div>
 
                 <div class="mt-4">
-                    <div class="row gy-3">
-                        <div class="col-12 col-md-auto">
-                            @if ($maxMinggu > 0)
-                            <button type="submit" class="btn btn-primary w-100 py-2">Update Pembayaran</button>
-                            @endif
-                        </div>
-                        <div class="col-12 col-md d-flex flex-wrap gap-2">
-                            <form method="POST" action="{{ route('pembayaran.tambah_minggu') }}" class="m-0">
-                                @csrf
-                                <input type="hidden" name="bulan" value="{{ $bulan }}">
-                                <input type="hidden" name="tahun" value="{{ $tahun }}">
-                                <button type="submit" class="btn btn-success">Tambah Minggu</button>
-                            </form>
-                            @if ($maxMinggu > 1)
-                            <form method="POST" action="{{ route('pembayaran.hapus_minggu') }}" class="m-0">
-                                @csrf
-                                <input type="hidden" name="bulan" value="{{ $bulan }}">
-                                <input type="hidden" name="tahun" value="{{ $tahun }}">
-                                <button type="submit" class="btn btn-warning">Hapus Minggu Terakhir (M{{ $maxMinggu }})</button>
-                            </form>
-                            @endif
-                            <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#tambahBulanModal">
-                                Tambah Bulan Baru
-                            </button>
-                        </div>
-                    </div>
+                    @if ($maxMinggu > 0)
+                    <button type="submit" class="btn btn-primary py-2 px-4">Update Pembayaran</button>
+                    @endif
                 </div>
             </form>
+
+            <div class="mt-3 d-flex flex-wrap gap-2">
+                <form method="POST" action="{{ route('pembayaran.tambah_minggu') }}" class="m-0">
+                    @csrf
+                    <input type="hidden" name="bulan" value="{{ $bulan }}">
+                    <input type="hidden" name="tahun" value="{{ $tahun }}">
+                    <button type="submit" class="btn btn-success">Tambah Minggu</button>
+                </form>
+                @if ($maxMinggu > 1)
+                <form method="POST" action="{{ route('pembayaran.hapus_minggu') }}" class="m-0">
+                    @csrf
+                    <input type="hidden" name="bulan" value="{{ $bulan }}">
+                    <input type="hidden" name="tahun" value="{{ $tahun }}">
+                    <button type="submit" class="btn btn-warning">Hapus Minggu Terakhir (M{{ $maxMinggu }})</button>
+                </form>
+                @endif
+                 <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#tambahBulanModal">
+                    Tambah Bulan Baru
+                </button>
+            </div>
+            
             <div class="mt-4 pt-4 border-top d-flex flex-wrap justify-content-center gap-2">
-                <a href="{{ route('siswa.index') }}" class="btn btn-secondary">Lihat Siswa</a>
+                <a href="{{ route('siswa.index') }}" class="btn btn-secondary">Manajemen Siswa</a>
+                 <a href="{{ route('pemasukan') }}" class="btn btn-outline-success">Manajemen Pemasukan</a>
+                <a href="{{ route('pengeluaran') }}" class="btn btn-outline-danger">Manajemen Pengeluaran</a>
             </div>
         </div>
     </main>
 
-    {{-- Kode Modal tidak diubah --}}
     <div class="modal fade" id="tambahBulanModal" tabindex="-1" aria-labelledby="tambahBulanLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content shadow-lg">
@@ -369,20 +386,14 @@
                                 <option value="{{ $blnKey }}">{{ $blnNama }}</option>
                                 @endforeach
                             </select>
-                            @error('bulan')
-                            <div class="text-danger mt-1">{{ $message }}</div>
-                            @enderror
                         </div>
                         <div class="mb-3">
                             <label for="tahunBaru" class="form-label">Tahun</label>
                             <select name="tahun" id="tahunBaru" class="form-select" required>
                                 @for ($y = now()->year - 2; $y <= now()->year + 2; $y++)
                                     <option value="{{ $y }}" {{ $y == now()->year ? 'selected' : '' }}>{{ $y }}</option>
-                                    @endfor
+                                @endfor
                             </select>
-                            @error('tahun')
-                            <div class="text-danger mt-1">{{ $message }}</div>
-                            @enderror
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -394,7 +405,32 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+    <div class="modal fade" id="logoutConfirmModal" tabindex="-1" aria-labelledby="logoutConfirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content shadow-lg">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="logoutConfirmModalLabel">Konfirmasi Logout</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="fs-5">Apakah Anda yakin akan logout?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-danger" id="confirmLogoutBtn">Logout</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const confirmLogoutBtn = document.getElementById('confirmLogoutBtn');
+        if (confirmLogoutBtn) {
+            confirmLogoutBtn.addEventListener('click', function () {
+                document.getElementById('logoutForm').submit();
+            });
+        }
+    </script>
+</body>
 </html>

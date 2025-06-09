@@ -27,7 +27,6 @@ class KeuanganController extends Controller
         '12' => 'Desember',
     ];
 
-    // Pengeluaran
     // =================================================================
     // GANTI METHOD 'pengeluaran' ANDA DENGAN YANG INI
     // =================================================================
@@ -72,7 +71,7 @@ class KeuanganController extends Controller
         }
 
         // PERBAIKAN: Mengirim ke view 'pengeluaran' bukan 'pengeluaran_siswa'
-        return view('pengeluaran_siswa', [
+        return view('pengeluaran', [
             'pengeluaran' => $pengeluaran,
             'bulan' => $bulan,
             'tahun' => $tahun,
@@ -223,8 +222,7 @@ class KeuanganController extends Controller
             $dropdownBulan = collect([$bulan => $this->bulanIndo[$bulan]]);
         }
 
-        // PERBAIKAN: Mengirim ke view 'pemasukan' bukan 'pemasukan_siswa'
-        return view('pemasukan_siswa', [
+        return view('pemasukan', [
             'pemasukan' => $pemasukan,
             'bulan' => $bulan,
             'tahun' => $tahun,
