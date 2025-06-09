@@ -13,40 +13,42 @@ use Illuminate\Support\Facades\Log;
 class KeuanganController extends Controller
 {
     private $bulanIndo = [
-        '01' => 'Januari', '02' => 'Februari', '03' => 'Maret',
-        '04' => 'April', '05' => 'Mei', '06' => 'Juni',
-        '07' => 'Juli', '08' => 'Agustus', '09' => 'September',
-        '10' => 'Oktober', '11' => 'November', '12' => 'Desember',
+        '01' => 'Januari',
+        '02' => 'Februari',
+        '03' => 'Maret',
+        '04' => 'April',
+        '05' => 'Mei',
+        '06' => 'Juni',
+        '07' => 'Juli',
+        '08' => 'Agustus',
+        '09' => 'September',
+        '10' => 'Oktober',
+        '11' => 'November',
+        '12' => 'Desember',
     ];
 
     // Pengeluaran
-       // GANTI SELURUH METHOD INI DI KeuanganController.php
+    // =================================================================
+    // GANTI METHOD 'pengeluaran' ANDA DENGAN YANG INI
+    // =================================================================
     public function pengeluaran(Request $request)
     {
         $bulan = $request->input('bulan', Carbon::now()->format('m'));
         $tahun = $request->input('tahun', Carbon::now()->year);
 
+        // PERBAIKAN: Query disederhanakan
         $pengeluaran = Pengeluaran::where('bulan', $bulan)
-            ->where('tahun', '>=', $tahun) // Perbaikan: seharusnya where('tahun', $tahun)
             ->where('tahun', $tahun)
-            ->orderBy('tanggal', 'desc') // Mengurutkan agar data terbaru di atas
+            ->orderBy('tanggal', 'desc')
             ->get();
 
-        // --- Perhitungan untuk Kartu Statistik ---
-        // 1. Hitung total pengeluaran (sudah ada)
-        $totalPengeluaran = $pengeluaran->sum('jumlah');
-
-        // 2. DITAMBAHKAN: Hitung total pemasukan untuk periode yang sama
-        $totalPemasukan = Pemasukan::where('bulan', $bulan)
-            ->where('tahun', $tahun)
-            ->sum('jumlah');
-
-        // 3. DITAMBAHKAN: Hitung total kas (saldo)
+        // --- PERBAIKAN: Perhitungan untuk Kartu Statistik (mengambil total keseluruhan) ---
+        $totalPemasukan = Pemasukan::sum('jumlah');
+        $totalPengeluaran = Pengeluaran::sum('jumlah');
         $totalKas = $totalPemasukan - $totalPengeluaran;
-        // --- Akhir Perhitungan Kartu Statistik ---
+        // --- Akhir Perbaikan ---
 
-
-        // Fetch distinct months with data for the selected year
+        // Logika untuk dropdown filter (sudah baik, tidak perlu diubah)
         $dropdownBulan = Pengeluaran::select('bulan')
             ->distinct()
             ->where('tahun', $tahun)
@@ -55,25 +57,21 @@ class KeuanganController extends Controller
                 return [$bulan => $this->bulanIndo[$bulan]];
             });
 
-        // Fetch distinct years with data
         $yearRange = Pengeluaran::select('tahun')
             ->distinct()
-            ->orderBy('tahun', 'desc') // Diubah ke desc agar tahun terbaru di atas
+            ->orderBy('tahun', 'desc')
             ->pluck('tahun')
             ->toArray();
 
-        // If no years with data, default to current year
         if (empty($yearRange)) {
             $yearRange = [Carbon::now()->year];
         }
 
-        // If no data for the selected year, set a default month (e.g., current month) if no selection
         if ($dropdownBulan->isEmpty() && !$request->has('bulan')) {
-            $bulan = Carbon::now()->format('m');
             $dropdownBulan = collect([$bulan => $this->bulanIndo[$bulan]]);
         }
 
-        // --- Kirim semua data yang dibutuhkan ke view ---
+        // PERBAIKAN: Mengirim ke view 'pengeluaran' bukan 'pengeluaran_siswa'
         return view('pengeluaran_siswa', [
             'pengeluaran' => $pengeluaran,
             'bulan' => $bulan,
@@ -81,43 +79,87 @@ class KeuanganController extends Controller
             'dropdownBulan' => $dropdownBulan,
             'yearRange' => $yearRange,
             'bulanIndo' => $this->bulanIndo,
-            
-            // Variabel BARU untuk kartu statistik
             'totalPengeluaran' => $totalPengeluaran,
             'totalPemasukan' => $totalPemasukan,
             'totalKas' => $totalKas,
         ]);
     }
 
-    public function pengeluaranCreate()
-    {
-        return view('pengeluaran_create', ['bulanIndo' => $this->bulanIndo]);
-    }
-
+    // ================================================================
+    // GANTI METHOD 'pengeluaranStore' ANDA DENGAN YANG INI
+    // =================================================================
     public function pengeluaranStore(Request $request)
     {
+        // PERBAIKAN: Hapus validasi untuk bulan dan tahun
         $request->validate([
             'nama' => 'required|string|max:255',
             'jumlah' => 'required|numeric|min:0',
             'tanggal' => 'required|date',
-            'bulan' => 'required|digits:2',
-            'tahun' => 'required|digits:4',
         ]);
 
         try {
+            // PERBAIKAN: Ambil bulan dan tahun dari tanggal yang diinput
+            $tanggal = Carbon::parse($request->tanggal);
+            $bulan = $tanggal->format('m');
+            $tahun = $tanggal->format('Y');
+
             Pengeluaran::create([
                 'nama' => $request->nama,
                 'jumlah' => $request->jumlah,
                 'tanggal' => $request->tanggal,
-                'bulan' => $request->bulan,
-                'tahun' => $request->tahun,
+                'bulan' => $bulan, // Gunakan bulan yang sudah diekstrak
+                'tahun' => $tahun, // Gunakan tahun yang sudah diekstrak
             ]);
 
-            return redirect()->route('pengeluaran')->with('success', 'Pengeluaran berhasil ditambahkan!');
+            // Redirect dengan filter bulan dan tahun dari data yang baru dibuat
+            return redirect()->route('pengeluaran', ['bulan' => $bulan, 'tahun' => $tahun])
+                ->with('success', 'Pengeluaran berhasil ditambahkan!');
         } catch (\Exception $e) {
             Log::error('Pengeluaran store failed: ' . $e->getMessage());
             return back()->with('error', 'Gagal menambahkan pengeluaran.');
         }
+    }
+
+    // =================================================================
+    // GANTI METHOD 'pengeluaranUpdate' ANDA DENGAN YANG INI
+    // =================================================================
+    public function pengeluaranUpdate(Request $request, $id)
+    {
+        $pengeluaran = Pengeluaran::findOrFail($id);
+
+        // PERBAIKAN: Hapus validasi untuk bulan dan tahun
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'jumlah' => 'required|numeric|min:0',
+            'tanggal' => 'required|date',
+        ]);
+
+        try {
+            // PERBAIKAN: Ambil bulan dan tahun dari tanggal yang diinput
+            $tanggal = Carbon::parse($request->tanggal);
+            $bulan = $tanggal->format('m');
+            $tahun = $tanggal->format('Y');
+
+            $pengeluaran->update([
+                'nama' => $request->nama,
+                'jumlah' => $request->jumlah,
+                'tanggal' => $request->tanggal,
+                'bulan' => $bulan, // Gunakan bulan yang sudah diekstrak
+                'tahun' => $tahun, // Gunakan tahun yang sudah diekstrak
+            ]);
+
+            // Redirect dengan filter bulan dan tahun dari data yang baru diupdate
+            return redirect()->route('pengeluaran', ['bulan' => $bulan, 'tahun' => $tahun])
+                ->with('success', 'Pengeluaran berhasil diperbarui!');
+        } catch (\Exception $e) {
+            Log::error('Pengeluaran update failed: ' . $e->getMessage());
+            return back()->with('error', 'Gagal memperbarui pengeluaran.')->withInput();
+        }
+    }
+
+    public function pengeluaranCreate()
+    {
+        return view('pengeluaran_create', ['bulanIndo' => $this->bulanIndo]);
     }
 
     public function pengeluaranEdit($id)
@@ -127,38 +169,6 @@ class KeuanganController extends Controller
             'pengeluaran' => $pengeluaran,
             'bulanIndo' => $this->bulanIndo,
         ]);
-    }
-
-    public function pengeluaranUpdate(Request $request, $id)
-    {
-        \Log::info('pengeluaranUpdate called with data: ', $request->all());
-
-        $pengeluaran = Pengeluaran::findOrFail($id);
-
-        $request->validate([
-            'nama' => 'required|string|max:255',
-            'jumlah' => 'required|numeric|min:0',
-            'tanggal' => 'required|date',
-            'bulan' => 'required|digits:2',
-            'tahun' => 'required|digits:4',
-        ]);
-
-        try {
-            \Log::info('Validation passed, updating Pengeluaran record');
-            $pengeluaran->update([
-                'nama' => $request->nama,
-                'jumlah' => $request->jumlah,
-                'tanggal' => $request->tanggal,
-                'bulan' => $request->bulan,
-                'tahun' => $request->tahun,
-            ]);
-
-            \Log::info('Record updated with ID: ' . $pengeluaran->id);
-            return redirect()->route('pengeluaran')->with('success', 'Pengeluaran berhasil diperbarui!');
-        } catch (\Exception $e) {
-            \Log::error('Pengeluaran update failed: ' . $e->getMessage());
-            return back()->with('error', 'Gagal memperbarui pengeluaran. Error: ' . $e->getMessage())->withInput();
-        }
     }
 
     public function pengeluaranDestroy($id)
@@ -174,115 +184,134 @@ class KeuanganController extends Controller
         }
     }
 
-    // Method Pemasukan yang menjadi pusat data untuk halaman Pemasukan Kas
+    // =================================================================
+    // GANTI METHOD 'pemasukan' ANDA DENGAN YANG INI
+    // =================================================================
     public function pemasukan(Request $request)
     {
-        // --- Langkah 1: Ambil filter bulan dan tahun ---
         $bulan = $request->input('bulan', Carbon::now()->format('m'));
         $tahun = $request->input('tahun', Carbon::now()->year);
 
-        // --- Langkah 2: Ambil daftar pemasukan sesuai filter ---
         $pemasukan = Pemasukan::where('bulan', $bulan)
             ->where('tahun', $tahun)
-            ->orderBy('tanggal', 'desc') // Diurutkan agar data terbaru di atas
+            ->orderBy('tanggal', 'desc')
             ->get();
 
-        // --- Langkah 3: Hitung data untuk kartu statistik ---
-        $totalPemasukan = $pemasukan->sum('jumlah');
-        
-        // DITAMBAHKAN: Ambil juga total pengeluaran untuk periode yang sama
-        $totalPengeluaran = Pengeluaran::where('bulan', $bulan)
-            ->where('tahun', $tahun)
-            ->sum('jumlah');
-            
-        // DITAMBAHKAN: Hitung total kas (saldo)
+        // --- PERBAIKAN: Perhitungan untuk Kartu Statistik (mengambil total keseluruhan) ---
+        $totalPemasukan = Pemasukan::sum('jumlah');
+        $totalPengeluaran = Pengeluaran::sum('jumlah');
         $totalKas = $totalPemasukan - $totalPengeluaran;
+        // --- Akhir Perbaikan ---
 
-        // --- Langkah 4: Siapkan data untuk dropdown filter ---
-        // (Logika ini hampir sama dengan kode asli Anda, hanya sedikit penyederhanaan)
         $dropdownBulan = Pemasukan::select('bulan')
             ->distinct()
             ->where('tahun', $tahun)
             ->pluck('bulan')
             ->sort()
-            ->mapWithKeys(fn ($b) => [$b => $this->bulanIndo[$b] ?? 'Bulan Tidak Valid']);
+            ->mapWithKeys(fn($b) => [$b => $this->bulanIndo[$b] ?? 'Bulan Tidak Valid']);
 
         $yearRange = Pemasukan::select('tahun')
             ->distinct()
             ->orderBy('tahun', 'desc')
             ->pluck('tahun')
             ->toArray();
-        
+
         if (empty($yearRange)) {
             $yearRange = [Carbon::now()->year];
         }
         if ($dropdownBulan->isEmpty() && !$request->has('bulan')) {
-             $dropdownBulan = collect([$bulan => $this->bulanIndo[$bulan]]);
+            $dropdownBulan = collect([$bulan => $this->bulanIndo[$bulan]]);
         }
 
-        // --- Langkah 5: DITAMBAHKAN - Siapkan data untuk Chart.js ---
-        // (Ini adalah logika yang kita "pinjam" dari ChartController)
-        $chartLabels = ['Pemasukan', 'Pengeluaran', 'Total'];
-        $chartPemasukan = [$totalPemasukan];
-        $chartPengeluaran = [$totalPengeluaran];
-        $chartTotalKas = [$totalKas];
-
-        // --- Langkah 6: Kirim semua data yang dibutuhkan ke view ---
-        return view('pemasukan_siswa', [ // Pastikan nama view sudah benar
-            // Data untuk daftar & filter
+        // PERBAIKAN: Mengirim ke view 'pemasukan' bukan 'pemasukan_siswa'
+        return view('pemasukan_siswa', [
             'pemasukan' => $pemasukan,
             'bulan' => $bulan,
             'tahun' => $tahun,
             'dropdownBulan' => $dropdownBulan,
             'yearRange' => $yearRange,
             'bulanIndo' => $this->bulanIndo,
-            
-            // Data untuk kartu statistik
             'totalPemasukan' => $totalPemasukan,
             'totalPengeluaran' => $totalPengeluaran,
             'totalKas' => $totalKas,
-
-            // Data untuk chart
-            'labels' => $chartLabels,
-            'pemasukanData' => $chartPemasukan,
-            'pengeluaranData' => $chartPengeluaran,
-            'totalKasData' => $chartTotalKas,
         ]);
     }
 
-    public function pemasukanCreate()
-    {
-        return view('pemasukan_create', ['bulanIndo' => $this->bulanIndo]);
-    }
-
+    // =================================================================
+    // GANTI METHOD 'pemasukanStore' ANDA DENGAN YANG INI
+    // =================================================================
     public function pemasukanStore(Request $request)
     {
-        \Log::info('pemasukanStore called with data: ', $request->all());
-
+        // PERBAIKAN: Hapus validasi untuk bulan dan tahun
         $request->validate([
             'nama' => 'required|string|max:255',
             'jumlah' => 'required|numeric|min:0',
             'tanggal' => 'required|date',
-            'bulan' => 'required|digits:2',
-            'tahun' => 'required|digits:4',
         ]);
 
         try {
-            \Log::info('Validation passed, creating Pemasukan record');
-            $pemasukan = Pemasukan::create([
+            // PERBAIKAN: Ambil bulan dan tahun dari tanggal yang diinput
+            $tanggal = Carbon::parse($request->tanggal);
+            $bulan = $tanggal->format('m');
+            $tahun = $tanggal->format('Y');
+
+            Pemasukan::create([
                 'nama' => $request->nama,
                 'jumlah' => $request->jumlah,
                 'tanggal' => $request->tanggal,
-                'bulan' => $request->bulan,
-                'tahun' => $request->tahun,
+                'bulan' => $bulan,
+                'tahun' => $tahun,
             ]);
 
-            \Log::info('Record created with ID: ' . $pemasukan->id);
-            return redirect()->route('pemasukan')->with('success', 'Pemasukan berhasil ditambahkan!');
+            return redirect()->route('pemasukan', ['bulan' => $bulan, 'tahun' => $tahun])
+                ->with('success', 'Pemasukan berhasil ditambahkan!');
         } catch (\Exception $e) {
-            \Log::error('Pemasukan store failed: ' . $e->getMessage());
-            return back()->with('error', 'Gagal menambahkan pemasukan. Error: ' . $e->getMessage())->withInput();
+            Log::error('Pemasukan store failed: ' . $e->getMessage());
+            return back()->with('error', 'Gagal menambahkan pemasukan.');
         }
+    }
+
+
+    // =================================================================
+    // GANTI METHOD 'pemasukanUpdate' ANDA DENGAN YANG INI
+    // =================================================================
+    public function pemasukanUpdate(Request $request, $id)
+    {
+        $pemasukan = Pemasukan::findOrFail($id);
+
+        // PERBAIKAN: Hapus validasi untuk bulan dan tahun
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'jumlah' => 'required|numeric|min:0',
+            'tanggal' => 'required|date',
+        ]);
+
+        try {
+            // PERBAIKAN: Ambil bulan dan tahun dari tanggal yang diinput
+            $tanggal = Carbon::parse($request->tanggal);
+            $bulan = $tanggal->format('m');
+            $tahun = $tanggal->format('Y');
+
+            $pemasukan->update([
+                'nama' => $request->nama,
+                'jumlah' => $request->jumlah,
+                'tanggal' => $request->tanggal,
+                'bulan' => $bulan,
+                'tahun' => $tahun,
+            ]);
+
+            return redirect()->route('pemasukan', ['bulan' => $bulan, 'tahun' => $tahun])
+                ->with('success', 'Pemasukan berhasil diperbarui!');
+        } catch (\Exception $e) {
+            Log::error('Pemasukan update failed: ' . $e->getMessage());
+            return back()->with('error', 'Gagal memperbarui pemasukan.')->withInput();
+        }
+    }
+
+
+    public function pemasukanCreate()
+    {
+        return view('pemasukan_create', ['bulanIndo' => $this->bulanIndo]);
     }
 
     public function pemasukanEdit($id)
@@ -292,38 +321,6 @@ class KeuanganController extends Controller
             'pemasukan' => $pemasukan,
             'bulanIndo' => $this->bulanIndo,
         ]);
-    }
-
-    public function pemasukanUpdate(Request $request, $id)
-    {
-        \Log::info('pemasukanUpdate called with data: ', $request->all());
-
-        $pemasukan = Pemasukan::findOrFail($id);
-
-        $request->validate([
-            'nama' => 'required|string|max:255',
-            'jumlah' => 'required|numeric|min:0',
-            'tanggal' => 'required|date',
-            'bulan' => 'required|digits:2',
-            'tahun' => 'required|digits:4',
-        ]);
-
-        try {
-            \Log::info('Validation passed, updating Pemasukan record');
-            $pemasukan->update([
-                'nama' => $request->nama,
-                'jumlah' => $request->jumlah,
-                'tanggal' => $request->tanggal,
-                'bulan' => $request->bulan,
-                'tahun' => $request->tahun,
-            ]);
-
-            \Log::info('Record updated with ID: ' . $pemasukan->id);
-            return redirect()->route('pemasukan')->with('success', 'Pemasukan berhasil diperbarui!');
-        } catch (\Exception $e) {
-            \Log::error('Pemasukan update failed: ' . $e->getMessage());
-            return back()->with('error', 'Gagal memperbarui pemasukan. Error: ' . $e->getMessage())->withInput();
-        }
     }
 
     public function pemasukanDestroy($id)
@@ -338,101 +335,101 @@ class KeuanganController extends Controller
             return back()->with('error', 'Gagal menghapus pemasukan.');
         }
     }
-    // app/Http/Controllers/KeuanganController.php
+
     // GANTI SELURUH METHOD INI DI KeuanganController.php
-public function utang(Request $request)
-{
-    $bulan = $request->input('bulan', null); // Null for all months
-    $tahun = $request->input('tahun', Carbon::now()->year);
+    public function utang(Request $request)
+    {
+        $bulan = $request->input('bulan', null); // Null for all months
+        $tahun = $request->input('tahun', Carbon::now()->year);
 
-    // --- DITAMBAHKAN: Perhitungan untuk Kartu Statistik ---
-    // Kita akan hitung total keseluruhan, tidak terpengaruh filter bulan/tahun
-    // agar kartu statistik menunjukkan gambaran umum keuangan.
-    $totalPemasukan = Pemasukan::sum('jumlah');
-    $totalPengeluaran = Pengeluaran::sum('jumlah');
-    $totalKas = $totalPemasukan - $totalPengeluaran;
-    // --- Akhir Penambahan ---
+        // --- DITAMBAHKAN: Perhitungan untuk Kartu Statistik ---
+        // Kita akan hitung total keseluruhan, tidak terpengaruh filter bulan/tahun
+        // agar kartu statistik menunjukkan gambaran umum keuangan.
+        $totalPemasukan = Pemasukan::sum('jumlah');
+        $totalPengeluaran = Pengeluaran::sum('jumlah');
+        $totalKas = $totalPemasukan - $totalPengeluaran;
+        // --- Akhir Penambahan ---
 
-    // Get all students
-    $siswa = Siswa::all();
+        // Get all students
+        $siswa = Siswa::all();
 
-    // Initialize debt data
-    $utangData = [];
+        // Initialize debt data
+        $utangData = [];
 
-    foreach ($siswa as $s) {
-        $missedPayments = 0;
-        $monthsToCheck = $bulan ? [$bulan] : array_keys($this->bulanIndo);
+        foreach ($siswa as $s) {
+            $missedPayments = 0;
+            $monthsToCheck = $bulan ? [$bulan] : array_keys($this->bulanIndo);
 
-        foreach ($monthsToCheck as $month) {
-            // Get max weeks for this month/year
-            $maxMinggu = Pembayaran::where('bulan', $month)
-                ->where('tahun', $tahun)
-                ->max('minggu') ?? 0;
-
-            for ($week = 1; $week <= $maxMinggu; $week++) {
-                $payment = Pembayaran::where('siswa_id', $s->id)
-                    ->where('bulan', $month)
+            foreach ($monthsToCheck as $month) {
+                // Get max weeks for this month/year
+                $maxMinggu = Pembayaran::where('bulan', $month)
                     ->where('tahun', $tahun)
-                    ->where('minggu', $week)
-                    ->first();
+                    ->max('minggu') ?? 0;
 
-                // Count as missed if no record exists or status is false
-                if (!$payment || !$payment->status) {
-                    $missedPayments++;
+                for ($week = 1; $week <= $maxMinggu; $week++) {
+                    $payment = Pembayaran::where('siswa_id', $s->id)
+                        ->where('bulan', $month)
+                        ->where('tahun', $tahun)
+                        ->where('minggu', $week)
+                        ->first();
+
+                    // Count as missed if no record exists or status is false
+                    if (!$payment || !$payment->status) {
+                        $missedPayments++;
+                    }
                 }
+            }
+
+            $totalUtang = $missedPayments * 5000;
+
+            if ($missedPayments > 0) {
+                $utangData[] = [
+                    'siswa_id' => $s->id,
+                    'nama' => $s->nama,
+                    'missed_payments' => $missedPayments,
+                    'total_utang' => $totalUtang,
+                ];
             }
         }
 
-        $totalUtang = $missedPayments * 5000;
+        // Fetch distinct months and years from Pembayaran
+        $dropdownBulan = Pembayaran::select('bulan', 'tahun')
+            ->distinct()
+            ->orderByDesc('tahun')
+            ->orderByDesc('bulan')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'bulan' => $item->bulan,
+                    'tahun' => $item->tahun,
+                    'nama' => $this->bulanIndo[$item->bulan] ?? 'N/A',
+                ];
+            });
 
-        if ($missedPayments > 0) {
-            $utangData[] = [
-                'siswa_id' => $s->id,
-                'nama' => $s->nama,
-                'missed_payments' => $missedPayments,
-                'total_utang' => $totalUtang,
-            ];
+        $yearRange = $dropdownBulan->pluck('tahun')->unique()->sortDesc()->values();
+
+        if (empty($yearRange->toArray())) {
+            $yearRange = [Carbon::now()->year];
         }
+
+        if ($dropdownBulan->isEmpty() && !$request->has('bulan')) {
+            $dropdownBulan = collect($this->bulanIndo)->map(function ($nama, $bulan) {
+                return ['bulan' => $bulan, 'nama' => $nama, 'tahun' => Carbon::now()->year];
+            });
+        }
+
+        return view('utang', [
+            'utangData' => $utangData,
+            'bulan' => $bulan,
+            'tahun' => $tahun,
+            'dropdownBulan' => $dropdownBulan,
+            'yearRange' => $yearRange,
+            'bulanIndo' => $this->bulanIndo,
+
+            // Variabel BARU untuk kartu statistik
+            'totalPemasukan' => $totalPemasukan,
+            'totalPengeluaran' => $totalPengeluaran,
+            'totalKas' => $totalKas,
+        ]);
     }
-
-    // Fetch distinct months and years from Pembayaran
-    $dropdownBulan = Pembayaran::select('bulan', 'tahun')
-        ->distinct()
-        ->orderByDesc('tahun')
-        ->orderByDesc('bulan')
-        ->get()
-        ->map(function ($item) {
-            return [
-                'bulan' => $item->bulan,
-                'tahun' => $item->tahun,
-                'nama' => $this->bulanIndo[$item->bulan] ?? 'N/A',
-            ];
-        });
-
-    $yearRange = $dropdownBulan->pluck('tahun')->unique()->sortDesc()->values();
-    
-    if (empty($yearRange->toArray())) {
-        $yearRange = [Carbon::now()->year];
-    }
-
-    if ($dropdownBulan->isEmpty() && !$request->has('bulan')) {
-        $dropdownBulan = collect($this->bulanIndo)->map(function ($nama, $bulan) {
-            return ['bulan' => $bulan, 'nama' => $nama, 'tahun' => Carbon::now()->year];
-        });
-    }
-
-    return view('utang', [
-        'utangData' => $utangData,
-        'bulan' => $bulan,
-        'tahun' => $tahun,
-        'dropdownBulan' => $dropdownBulan,
-        'yearRange' => $yearRange,
-        'bulanIndo' => $this->bulanIndo,
-
-        // Variabel BARU untuk kartu statistik
-        'totalPemasukan' => $totalPemasukan,
-        'totalPengeluaran' => $totalPengeluaran,
-        'totalKas' => $totalKas,
-    ]);
-}
 }

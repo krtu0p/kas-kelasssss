@@ -249,17 +249,17 @@
 <body>
     <header class="page-header">
         <div class="header-title">
-            <a href="{{ route('siswa.index') }}">Kas Foerda</a>
+            <a href="{{ route('dashboard') }}">Kas Foerda</a>
         </div>
         <button class="user-button">User</button>
     </header>
 
     <main class="main-container">
-        <h1 class="content-title">Pemasukan Kas</h1>
+        <h1 class="content-title">Data Pemasukan Kas</h1>
 
         <div class="stats-grid">
             <div class="stat-card">
-                <a href="#">
+                <a href="{{ route('pemasukan') }}">
                     <div class="amount">IDR. {{ number_format($totalPemasukan ?? 0, 0, ',', '.') }}</div>
                     <div class="label">Pemasukan</div>
                 </a>
@@ -283,9 +283,24 @@
         </div>
 
         <div class="content-container">
+            @if (session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            @endif
+            @if (session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            @endif
+
+            {{-- ======================= PERBAIKAN DI SINI ======================= --}}
             <form method="GET" action="{{ route('pemasukan') }}" class="filter-form">
                 <div class="form-group">
-                    <label for="bulan">Bulan</label>
+                    <label for="bulan">Pilih Bulan</label>
+                    {{-- Atribut onchange="this.form.submit()" telah dihapus dari sini --}}
                     <select name="bulan" id="bulan" class="form-select">
                         @foreach ($dropdownBulan as $key => $value)
                         <option value="{{ $key }}" {{ $key == $bulan ? 'selected' : '' }}>{{ $value }}</option>
@@ -294,6 +309,7 @@
                 </div>
                 <div class="form-group">
                     <label for="tahun">Tahun</label>
+                    {{-- Atribut onchange="this.form.submit()" telah dihapus dari sini --}}
                     <select name="tahun" id="tahun" class="form-select">
                         @foreach ($yearRange as $year)
                         <option value="{{ $year }}" {{ $year == $tahun ? 'selected' : '' }}>{{ $year }}</option>
@@ -301,11 +317,10 @@
                     </select>
                 </div>
                 <div>
-                    <button type="submit" class="btn btn-primary">Lihat</button>
+                    <button type="submit" class="btn btn-primary" @if ($dropdownBulan->isEmpty()) disabled @endif>Lihat</button>
                 </div>
             </form>
-
-            @if (session('success')) <div class="alert alert-success">{{ session('success') }}</div> @endif
+            {{-- ======================= AKHIR PERBAIKAN ======================= --}}
 
             <div class="table-wrapper">
                 <table class="table custom-table">
@@ -314,7 +329,7 @@
                             <th>Nama Pemasukan</th>
                             <th>Jumlah</th>
                             <th>Tanggal</th>
-                            <th></th>
+                            <th></th> <!-- Gak usah ditambah sesuatu cok -->
                         </tr>
                     </thead>
                     <tbody>
@@ -325,28 +340,25 @@
                             <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d F Y') }}</td>
                             <td>
                                 <div class="d-flex gap-2">
-                                    <button type="button" class="action-btn action-btn-edit"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#modalEditPemasukan"
+                                    <button type="button" class="action-btn action-btn-edit" title="Edit"
+                                        data-bs-toggle="modal" data-bs-target="#editPemasukanModal"
                                         data-id="{{ $item->id }}"
                                         data-nama="{{ $item->nama }}"
                                         data-jumlah="{{ $item->jumlah }}"
-                                        data-tanggal="{{ $item->tanggal->format('Y-m-d') }}">
+                                        data-tanggal="{{ \Carbon\Carbon::parse($item->tanggal)->format('Y-m-d') }}">
                                         <i class="bi bi-pencil-square"></i>
                                     </button>
-                                    <form action="{{ route('pengeluaran.destroy', $item->id) }}" method="POST" class="m-0">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="action-btn action-btn-delete" title="Hapus" onclick="return confirm('Yakin ingin menghapus data ini?')">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </form>
+                                    <button type="button" class="action-btn action-btn-delete" title="Hapus"
+                                        data-bs-toggle="modal" data-bs-target="#hapusPemasukanModal"
+                                        data-id="{{ $item->id }}">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="3" class="text-center p-4 text-secondary">Tidak ada data pemasukan untuk periode ini.</td>
+                            <td colspan="4" class="text-center p-4 text-secondary">Tidak ada data pemasukan untuk periode ini.</td>
                         </tr>
                         @endforelse
                     </tbody>
@@ -355,8 +367,7 @@
 
             <div class="mt-4 d-flex justify-content-end align-items-center">
                 <div class="d-flex gap-2">
-                    <!-- Ganti dengan tombol trigger modal -->
-                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalTambahPemasukan">
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#tambahPemasukanModal">
                         Tambah Pemasukan
                     </button>
                     <a href="{{ route('dashboard') }}" class="btn btn-secondary">Kembali ke Dashboard</a>
@@ -365,33 +376,31 @@
         </div>
     </main>
 
-    <!-- Modal Tambah Pemasukan -->
-    <div class="modal fade" id="modalTambahPemasukan" tabindex="-1" aria-labelledby="modalTambahPemasukanLabel" aria-hidden="true">
+    <div class="modal fade" id="tambahPemasukanModal" tabindex="-1" aria-labelledby="tambahPemasukanModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content bg-light shadow">
                 <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title" id="modalTambahPemasukanLabel">Tambah Pemasukan</h5>
+                    <h5 class="modal-title" id="tambahPemasukanModalLabel">Tambah Pemasukan</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Tutup"></button>
                 </div>
-                <form method="POST" action="{{ route('pemasukan.store') }}" onsubmit="return confirm('Yakin ingin menyimpan pemasukan ini?')">
+                <form method="POST" action="{{ route('pemasukan.store') }}">
                     @csrf
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label for="modal_nama" class="form-label">Nama Pemasukan</label>
-                            <input type="text" name="nama" id="modal_nama" class="form-control" required>
+                            <label for="tambah_nama" class="form-label">Nama Pemasukan</label>
+                            <input type="text" name="nama" id="tambah_nama" class="form-control" required>
                         </div>
                         <div class="mb-3">
-                            <label for="modal_jumlah" class="form-label">Jumlah (Rp)</label>
-                            <input type="number" name="jumlah" id="modal_jumlah" class="form-control" step="0.01" required>
+                            <label for="tambah_jumlah" class="form-label">Jumlah (Rp)</label>
+                            <input type="number" name="jumlah" id="tambah_jumlah" class="form-control" required>
                         </div>
                         <div class="mb-3">
-                            <label for="modal_tanggal" class="form-label">Tanggal</label>
-                            <input type="date" name="tanggal" id="modal_tanggal" class="form-control" value="{{ now()->format('Y-m-d') }}" required onchange="updateModalMonthYear()">
+                            <label for="tambah_tanggal" class="form-label">Tanggal</label>
+                            <input type="date" name="tanggal" id="tambah_tanggal" class="form-control" value="{{ now()->format('Y-m-d') }}" required>
                         </div>
-                        <input type="hidden" name="bulan" id="modal_bulan_hidden">
-                        <input type="hidden" name="tahun" id="modal_tahun_hidden">
                     </div>
                     <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                         <button type="submit" class="btn btn-success">Simpan</button>
                     </div>
                 </form>
@@ -399,15 +408,14 @@
         </div>
     </div>
 
-    <!-- Modal Edit Pemasukan -->
-    <div class="modal fade" id="modalEditPemasukan" tabindex="-1" aria-labelledby="modalEditPemasukanLabel" aria-hidden="true">
+    <div class="modal fade" id="editPemasukanModal" tabindex="-1" aria-labelledby="editPemasukanModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content bg-light shadow">
                 <div class="modal-header bg-warning text-dark">
-                    <h5 class="modal-title" id="modalEditPemasukanLabel">Edit Pemasukan</h5>
+                    <h5 class="modal-title" id="editPemasukanModalLabel">Edit Pemasukan</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
                 </div>
-                <form id="formEditPemasukan" method="POST">
+                <form id="editPemasukanForm" method="POST">
                     @csrf
                     @method('PUT')
                     <div class="modal-body">
@@ -417,73 +425,70 @@
                         </div>
                         <div class="mb-3">
                             <label for="edit_jumlah" class="form-label">Jumlah (Rp)</label>
-                            <input type="number" name="jumlah" id="edit_jumlah" class="form-control" step="0.01" required>
+                            <input type="number" name="jumlah" id="edit_jumlah" class="form-control" required>
                         </div>
                         <div class="mb-3">
                             <label for="edit_tanggal" class="form-label">Tanggal</label>
-                            <input type="date" name="tanggal" id="edit_tanggal" class="form-control" required onchange="updateEditModalMonthYear()">
+                            <input type="date" name="tanggal" id="edit_tanggal" class="form-control" required>
                         </div>
-                        <input type="hidden" name="bulan" id="edit_bulan_hidden">
-                        <input type="hidden" name="tahun" id="edit_tahun_hidden">
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-warning">Update</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-warning">Simpan Perubahan</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
+    <div class="modal fade" id="hapusPemasukanModal" tabindex="-1" aria-labelledby="hapusPemasukanModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-light shadow">
+                <div class="modal-header bg-danger text-white">
+                    <h1 class="modal-title fs-5" id="hapusPemasukanModalLabel">Konfirmasi Hapus</h1>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="hapusPemasukanForm" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <div class="modal-body">
+                        <p>Apakah Anda yakin ingin menghapus data pemasukan ini secara permanen?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-danger">Hapus</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        function updateModalMonthYear() {
-            const tanggal = document.getElementById('modal_tanggal').value;
-            if (tanggal) {
-                const dateObj = new Date(tanggal);
-                const bulan = String(dateObj.getMonth() + 1).padStart(2, '0');
-                const tahun = dateObj.getFullYear();
-                document.getElementById('modal_bulan_hidden').value = bulan;
-                document.getElementById('modal_tahun_hidden').value = tahun;
-            }
-        }
-
-        // Auto-update bulan/tahun saat modal dibuka
-        const modalElement = document.getElementById('modalTambahPemasukan');
-        modalElement.addEventListener('shown.bs.modal', function() {
-            updateModalMonthYear();
-        });
-
-        function updateEditModalMonthYear() {
-            const tanggal = document.getElementById('edit_tanggal').value;
-            if (tanggal) {
-                const dateObj = new Date(tanggal);
-                const bulan = String(dateObj.getMonth() + 1).padStart(2, '0');
-                const tahun = dateObj.getFullYear();
-                document.getElementById('edit_bulan_hidden').value = bulan;
-                document.getElementById('edit_tahun_hidden').value = tahun;
-            }
-        }
-
-        // Saat modal edit dibuka, isi data
-        document.getElementById('modalEditPemasukan').addEventListener('show.bs.modal', function(event) {
+        const editPemasukanModal = document.getElementById('editPemasukanModal');
+        editPemasukanModal.addEventListener('show.bs.modal', event => {
             const button = event.relatedTarget;
             const id = button.getAttribute('data-id');
             const nama = button.getAttribute('data-nama');
             const jumlah = button.getAttribute('data-jumlah');
             const tanggal = button.getAttribute('data-tanggal');
 
+            const form = document.getElementById('editPemasukanForm');
+            form.action = `{{ url('pemasukan') }}/${id}`;
+
             document.getElementById('edit_nama').value = nama;
             document.getElementById('edit_jumlah').value = jumlah;
             document.getElementById('edit_tanggal').value = tanggal;
+        });
 
-            // Update bulan dan tahun otomatis
-            updateEditModalMonthYear();
-
-            // Ganti action form
-            const form = document.getElementById('formEditPemasukan');
-            form.action = `/pemasukan/${id}`; // Pastikan route resource sesuai
+        const hapusPemasukanModal = document.getElementById('hapusPemasukanModal');
+        hapusPemasukanModal.addEventListener('show.bs.modal', event => {
+            const button = event.relatedTarget;
+            const id = button.getAttribute('data-id');
+            const form = document.getElementById('hapusPemasukanForm');
+            form.action = `{{ url('pemasukan') }}/${id}`;
         });
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

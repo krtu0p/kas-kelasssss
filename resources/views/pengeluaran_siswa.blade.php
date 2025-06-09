@@ -10,7 +10,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <style>
@@ -22,8 +21,6 @@
             --text-secondary: #757575;
             --border-color: #DEE2E6;
             --body-bg: #f8f9fa;
-
-            /* DITAMBAHKAN: Warna untuk tombol aksi dari Anda */
             --edit-bg-color: #FFF4D4;
             --edit-icon-color: #F79009;
             --delete-bg-color: #FEF3F2;
@@ -185,7 +182,6 @@
             background-color: #f5f5f5;
         }
 
-        /* LANGKAH 2: DITAMBAHKAN - Gaya CSS untuk Tombol Aksi Baru */
         .action-btn {
             display: inline-flex;
             align-items: center;
@@ -194,16 +190,13 @@
             height: 48px;
             border: none;
             border-radius: 8px;
-            /* Membuat sudut lebih rounded */
             font-size: 18px;
-            /* Ukuran ikon */
             cursor: pointer;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
         .action-btn:hover {
             transform: scale(1.1);
-            /* Efek zoom saat disentuh mouse */
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
@@ -228,7 +221,7 @@
     </header>
 
     <main class="main-container">
-        <h1 class="content-title">Data Pengeluaran</h1>
+        <h1 class="content-title">Data Pengeluaran Kas</h1>
 
         <div class="stats-grid">
             <div class="stat-card">
@@ -313,16 +306,22 @@
                             <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d F Y') }}</td>
                             <td>
                                 <div class="d-flex gap-2">
-                                    <a href="{{ route('pengeluaran.edit', $item->id) }}" class="action-btn action-btn-edit" title="Edit">
+                                    <button type="button" class="action-btn action-btn-edit" title="Edit" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#editPengeluaranModal"
+                                        data-id="{{ $item->id }}"
+                                        data-nama="{{ $item->nama }}"
+                                        data-jumlah="{{ $item->jumlah }}"
+                                        data-tanggal="{{ $item->tanggal }}">
                                         <i class="bi bi-pencil-square"></i>
-                                    </a>
-                                    <form action="{{ route('pengeluaran.destroy', $item->id) }}" method="POST" class="m-0">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="action-btn action-btn-delete" title="Hapus" onclick="return confirm('Yakin ingin menghapus data ini?')">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </form>
+                                    </button>
+                                    
+                                    <button type="button" class="action-btn action-btn-delete" title="Hapus" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#hapusPengeluaranModal"
+                                        data-id="{{ $item->id }}">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -335,19 +334,142 @@
                 </table>
             </div>
 
-            <div class="mt-4 d-flex justify-content-between align-items-center">
-                <div>
-                    <!-- <strong class="fs-5">Total Pengeluaran Bulan Ini: IDR. {{ number_format($totalPengeluaran, 0, ',', '.') }}</strong> -->
-                </div>
+            <div class="mt-4 d-flex justify-content-end align-items-center">
                 <div class="d-flex gap-2">
-                    <a href="{{ route('pengeluaran.create') }}" class="btn btn-success">Tambah Pengeluaran</a>
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#tambahPengeluaranModal">
+                        Tambah Pengeluaran
+                    </button>
                     <a href="{{ route('dashboard') }}" class="btn btn-secondary">Kembali ke Dashboard</a>
                 </div>
             </div>
 
         </div>
     </main>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+    
+    <div class="modal fade" id="tambahPengeluaranModal" tabindex="-1" aria-labelledby="tambahPengeluaranModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-light shadow">
+                <div class="modal-header bg-success text-white">
+                    <h1 class="modal-title fs-5" id="tambahPengeluaranModalLabel">Tambah Pengeluaran Baru</h1>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ route('pengeluaran.store') }}" method="POST">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="nama" class="form-label">Nama Pengeluaran</label>
+                            <input type="text" class="form-control" id="nama" name="nama" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="jumlah" class="form-label">Jumlah (IDR)</label>
+                            <input type="number" class="form-control" id="jumlah" name="jumlah" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="tanggal" class="form-label">Tanggal</label>
+                            <input type="date" class="form-control" id="tanggal" name="tanggal" value="{{ now()->format('Y-m-d') }}" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-success">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
+    <div class="modal fade" id="editPengeluaranModal" tabindex="-1" aria-labelledby="editPengeluaranModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-light shadow">
+                <div class="modal-header bg-warning text-dark">
+                    <h1 class="modal-title fs-5" id="editPengeluaranModalLabel">Edit Data Pengeluaran</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="editPengeluaranForm" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="edit_nama" class="form-label">Nama Pengeluaran</label>
+                            <input type="text" class="form-control" id="edit_nama" name="nama" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_jumlah" class="form-label">Jumlah (IDR)</label>
+                            <input type="number" class="form-control" id="edit_jumlah" name="jumlah" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_tanggal" class="form-label">Tanggal</label>
+                            <input type="date" class="form-control" id="edit_tanggal" name="tanggal" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-warning">Simpan Perubahan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="hapusPengeluaranModal" tabindex="-1" aria-labelledby="hapusPengeluaranModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-light shadow">
+                <div class="modal-header bg-danger text-white">
+                    <h1 class="modal-title fs-5" id="hapusPengeluaranModalLabel">Konfirmasi Hapus</h1>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="hapusPengeluaranForm" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <div class="modal-body">
+                        <p>Apakah Anda yakin ingin menghapus data pengeluaran ini secara permanen?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-danger">Hapus</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Tangkap event saat modal edit akan ditampilkan
+        const editPengeluaranModal = document.getElementById('editPengeluaranModal');
+        editPengeluaranModal.addEventListener('show.bs.modal', event => {
+            const button = event.relatedTarget;
+            const id = button.getAttribute('data-id');
+            const nama = button.getAttribute('data-nama');
+            const jumlah = button.getAttribute('data-jumlah');
+            const tanggal = button.getAttribute('data-tanggal');
+            
+            const form = document.getElementById('editPengeluaranForm');
+            const inputNama = document.getElementById('edit_nama');
+            const inputJumlah = document.getElementById('edit_jumlah');
+            const inputTanggal = document.getElementById('edit_tanggal');
+
+            let url = "{{ route('pengeluaran.update', ['id' => ':id']) }}";
+            url = url.replace(':id', id);
+            form.action = url;
+
+            inputNama.value = nama;
+            inputJumlah.value = jumlah;
+            inputTanggal.value = tanggal;
+        });
+
+        // Tangkap event saat modal hapus akan ditampilkan
+        const hapusPengeluaranModal = document.getElementById('hapusPengeluaranModal');
+        hapusPengeluaranModal.addEventListener('show.bs.modal', event => {
+            const button = event.relatedTarget;
+            const id = button.getAttribute('data-id');
+            const form = document.getElementById('hapusPengeluaranForm');
+            
+            let url = "{{ route('pengeluaran.destroy', ['id' => ':id']) }}";
+            url = url.replace(':id', id);
+            form.action = url;
+        });
+    </script>
+</body>
 </html>
