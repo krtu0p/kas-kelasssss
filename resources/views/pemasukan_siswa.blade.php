@@ -64,21 +64,58 @@
             color: var(--white-color);
         }
 
-        /* DITAMBAHKAN: Animasi untuk Tombol User */
-        .page-header .user-button {
-            background-color: var(--white-color);
-            color: var(--primary-color);
-            border: none;
-            border-radius: 999px;
-            padding: 0.5rem 1.5rem;
-            font-weight: 600;
-            transition: transform 0.2s ease;
-            /* Transisi ditambahkan */
+        /* buat tombol dropdownnya */
+        .user-profile-dropdown .user-button {
+            width: 45px;
+            height: 45px;
+            padding: 0;
+            border: 2px solid var(--white-color);
+            /* Menambahkan bingkai putih */
+            border-radius: 50%;
+            /* Membuat tombol menjadi bulat */
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            /* Transisi untuk semua perubahan (warna, ukuran) */
         }
 
-        .user-button:hover {
-            transform: scale(1.05);
-            /* Efek zoom saat hover */
+        .user-profile-dropdown .user-button:hover {
+            transform: scale(1.1);
+            background-color: var(--white-color);
+            /* Efek warna terbalik saat hover */
+            color: var(--primary-color);
+        }
+
+        .user-profile-dropdown .user-button .bi-person-fill {
+            font-size: 1.5rem;
+            /* Menyesuaikan ukuran ikon di dalam tombol */
+        }
+
+        .user-profile-dropdown .dropdown-menu {
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: none;
+            padding: 0.5rem;
+        }
+
+        .user-profile-dropdown .dropdown-item {
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+        }
+
+        .user-profile-dropdown .dropdown-item .bi {
+            margin-right: 0.5rem;
+            vertical-align: middle;
+        }
+
+        .user-profile-dropdown .dropdown-item.text-danger:hover,
+        .user-profile-dropdown .dropdown-item.text-danger:focus {
+            background-color: #fce8e8;
+            color: #b02a37 !important;
         }
 
         /* =================================
@@ -251,7 +288,21 @@
         <div class="header-title">
             <a href="{{ route('dashboard') }}">Kas Foerda</a>
         </div>
-        <button class="user-button">User</button>
+        <div class="dropdown user-profile-dropdown">
+            <button class="user-button" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="User Menu">
+                <i class="bi bi-person-fill"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                    <form id="logoutForm" method="POST" action="{{ route('logout') }}" class="m-0">
+                        @csrf
+                        <button type="button" class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#logoutConfirmModal">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </button>
+                    </form>
+                </li>
+            </ul>
+        </div>
     </header>
 
     <main class="main-container">

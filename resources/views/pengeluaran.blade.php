@@ -58,18 +58,58 @@
             color: var(--white-color);
         }
 
-        .page-header .user-button {
-            background-color: var(--white-color);
-            color: var(--primary-color);
-            border: none;
-            border-radius: 999px;
-            padding: 0.5rem 1.5rem;
-            font-weight: 600;
-            transition: transform 0.2s ease;
+        /* buat tombol dropdownnya */
+        .user-profile-dropdown .user-button {
+            width: 45px;
+            height: 45px;
+            padding: 0;
+            border: 2px solid var(--white-color);
+            /* Menambahkan bingkai putih */
+            border-radius: 50%;
+            /* Membuat tombol menjadi bulat */
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            /* Transisi untuk semua perubahan (warna, ukuran) */
         }
 
-        .user-button:hover {
-            transform: scale(1.05);
+        .user-profile-dropdown .user-button:hover {
+            transform: scale(1.1);
+            background-color: var(--white-color);
+            /* Efek warna terbalik saat hover */
+            color: var(--primary-color);
+        }
+
+        .user-profile-dropdown .user-button .bi-person-fill {
+            font-size: 1.5rem;
+            /* Menyesuaikan ukuran ikon di dalam tombol */
+        }
+
+        .user-profile-dropdown .dropdown-menu {
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: none;
+            padding: 0.5rem;
+        }
+
+        .user-profile-dropdown .dropdown-item {
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+        }
+
+        .user-profile-dropdown .dropdown-item .bi {
+            margin-right: 0.5rem;
+            vertical-align: middle;
+        }
+
+        .user-profile-dropdown .dropdown-item.text-danger:hover,
+        .user-profile-dropdown .dropdown-item.text-danger:focus {
+            background-color: #fce8e8;
+            color: #b02a37 !important;
         }
 
         .main-container {
@@ -217,7 +257,21 @@
         <div class="header-title">
             <a href="{{ route('dashboard') }}">Kas Foerda</a>
         </div>
-        <button class="user-button">User</button>
+        <div class="dropdown user-profile-dropdown">
+            <button class="user-button" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="User Menu">
+                <i class="bi bi-person-fill"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                    <form id="logoutForm" method="POST" action="{{ route('logout') }}" class="m-0">
+                        @csrf
+                        <button type="button" class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#logoutConfirmModal">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </button>
+                    </form>
+                </li>
+            </ul>
+        </div>
     </header>
 
     <main class="main-container">
@@ -306,8 +360,8 @@
                             <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d F Y') }}</td>
                             <td>
                                 <div class="d-flex gap-2">
-                                    <button type="button" class="action-btn action-btn-edit" title="Edit" 
-                                        data-bs-toggle="modal" 
+                                    <button type="button" class="action-btn action-btn-edit" title="Edit"
+                                        data-bs-toggle="modal"
                                         data-bs-target="#editPengeluaranModal"
                                         data-id="{{ $item->id }}"
                                         data-nama="{{ $item->nama }}"
@@ -315,9 +369,9 @@
                                         data-tanggal="{{ $item->tanggal }}">
                                         <i class="bi bi-pencil-square"></i>
                                     </button>
-                                    
-                                    <button type="button" class="action-btn action-btn-delete" title="Hapus" 
-                                        data-bs-toggle="modal" 
+
+                                    <button type="button" class="action-btn action-btn-delete" title="Hapus"
+                                        data-bs-toggle="modal"
                                         data-bs-target="#hapusPengeluaranModal"
                                         data-id="{{ $item->id }}">
                                         <i class="bi bi-trash"></i>
@@ -345,7 +399,7 @@
 
         </div>
     </main>
-    
+
     <div class="modal fade" id="tambahPengeluaranModal" tabindex="-1" aria-labelledby="tambahPengeluaranModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content bg-light shadow">
@@ -433,6 +487,24 @@
         </div>
     </div>
 
+    <div class="modal fade" id="logoutConfirmModal" tabindex="-1" aria-labelledby="logoutConfirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content shadow-lg">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="logoutConfirmModalLabel">Konfirmasi Logout</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="fs-5">Apakah Anda yakin akan logout?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-danger" id="confirmLogoutBtn">Logout</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
@@ -444,7 +516,7 @@
             const nama = button.getAttribute('data-nama');
             const jumlah = button.getAttribute('data-jumlah');
             const tanggal = button.getAttribute('data-tanggal');
-            
+
             const form = document.getElementById('editPengeluaranForm');
             const inputNama = document.getElementById('edit_nama');
             const inputJumlah = document.getElementById('edit_jumlah');
@@ -465,11 +537,19 @@
             const button = event.relatedTarget;
             const id = button.getAttribute('data-id');
             const form = document.getElementById('hapusPengeluaranForm');
-            
+
             let url = "{{ route('pengeluaran.destroy', ['id' => ':id']) }}";
             url = url.replace(':id', id);
             form.action = url;
         });
+
+        const confirmLogoutBtn = document.getElementById('confirmLogoutBtn');
+        if (confirmLogoutBtn) {
+            confirmLogoutBtn.addEventListener('click', function() {
+                document.getElementById('logoutForm').submit();
+            });
+        }
     </script>
 </body>
+
 </html>
