@@ -1,13 +1,13 @@
 services:
   - type: web
-    name: laravel-app
+    name: kas_kelas
     env: docker
     plan: free
     dockerfilePath: ./Dockerfile
-    buildCommand: |
-      composer install --optimize-autoloader --no-dev
-      php artisan migrate --force
-      php artisan db:seed --force
+    startCommand: |
+      php artisan migrate --force && \
+      php artisan db:seed --force && \
+      apache2-foreground
     envVars:
       - key: APP_KEY
         generateValue: true
@@ -26,6 +26,11 @@ services:
       - key: DB_USERNAME
         value: kas
       - key: DB_PASSWORD
-        fromService:
-          name: kas_kelas
-          property: password
+        value: UmRBJ1fn3cE7ueTu7ly3lP5cR8nUMt8l
+
+# Optional: define DB kalau lo mau pake `fromDatabase`
+# databases:
+#   - name: kas_kelas_db
+#     databaseName: kas_kelas_p07k
+#     user: kas
+#     plan: free
