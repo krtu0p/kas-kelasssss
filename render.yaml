@@ -4,6 +4,10 @@ services:
     env: docker
     plan: free
     dockerfilePath: ./Dockerfile
+    buildCommand: |
+      composer install --optimize-autoloader --no-dev
+      php artisan migrate --force
+      php artisan db:seed --force
     envVars:
       - key: APP_KEY
         generateValue: true
@@ -23,5 +27,5 @@ services:
         value: kas
       - key: DB_PASSWORD
         fromService:
-          name: kas_kelas_p07k
+          name: kas_kelas
           property: password
