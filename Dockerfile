@@ -1,6 +1,6 @@
 FROM php:8.2-apache
 
-# Install deps
+# Install dependencies
 RUN apt-get update && apt-get install -y \
     git curl zip unzip libpng-dev libonig-dev libxml2-dev \
     libzip-dev libpq-dev libjpeg-dev libfreetype6-dev && \
@@ -11,28 +11,31 @@ RUN apt-get update && apt-get install -y \
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Set working dir
+# Set working directory
 WORKDIR /var/www/html
 
-# Copy project files
+# Copy Laravel project files
 COPY . .
+
+# Copy Apache config
+COPY conf/apache/laravel.conf /etc/apache2/sites-available/000-default.conf
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html/storage
 
-# Build Laravel app
-RUN composer install --optimize-autoloader --no-dev
-
-# Set environment to production and migrate+seed
-RUN cp .env.example .env && \
-    php artisan config:clear && \
-    php artisan key:generate && \
-    php artisan migrate --force && \
-    php artisan db:seed --force
-
 # Enable Apache rewrite
 RUN a2enmod rewrite
 
+# Install PHP dependencies
+RUN composer install --optimize-autoloader --no-dev
+
+# Laravel setup
+RUN cp .env.example .env && \
+    php artisan config:clear && \
+    php artisan key:generate
+
 EXPOSE 80
+
+# Start Apache
 CMD ["apache2-foreground"]
