@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y \
 
 # Enable Apache Rewrite Module
 RUN a2enmod rewrite
+RUN sed -i 's/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -19,6 +20,10 @@ COPY . /var/www/html
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+
+# Copy Apache configuration
+COPY ./conf/apache/laravel.conf /etc/apache2/sites-available/000-default.conf
 
 # Install dependencies and optimize Laravel
 RUN composer install --no-dev --optimize-autoloader && \
@@ -27,7 +32,10 @@ RUN composer install --no-dev --optimize-autoloader && \
     php artisan view:cache && \
     php artisan storage:link
 
+# Copy and set deploy script
+COPY ./scripts/00-laravel-deploy.sh /usr/local/bin/laravel-deploy.sh
+RUN chmod +x /usr/local/bin/laravel-deploy.sh
+
 EXPOSE 80
 
-CMD php artisan migrate --force && php artisan db:seed --force && php artisan serve --host=0.0.0.0 --port=80
-
+CMD /usr/local/bin/laravel-deploy.sh && apache2-foreground
