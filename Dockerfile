@@ -30,13 +30,12 @@ RUN a2enmod rewrite
 # Install PHP dependencies
 RUN composer install --optimize-autoloader --no-dev
 
-# Laravel setup
+# Laravel setup (without migration)
 RUN cp .env.example .env && \
     php artisan config:clear && \
-    php artisan key:generate && \
-    php artisan migrate --seed
+    php artisan key:generate
 
 EXPOSE 80
 
-# Start Apache
-CMD ["apache2-foreground"]
+# Start Apache after running migration
+CMD php artisan migrate --seed && apache2-foreground
