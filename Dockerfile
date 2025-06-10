@@ -33,9 +33,6 @@ RUN composer install --no-dev --optimize-autoloader && \
     php artisan storage:link && \
     php artisan migrate:fresh --seed
 
-# Copy and set deploy script
-COPY ./scripts/00-laravel-deploy.sh /usr/local/bin/laravel-deploy.sh
-RUN chmod +x /usr/local/bin/laravel-deploy.sh
 
 EXPOSE 80
 
