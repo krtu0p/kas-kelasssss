@@ -29,9 +29,12 @@ WORKDIR /var/www
 # Copy project files
 COPY . .
 
-# Install dependencies with memory limit bypass and cache
-RUN composer config --global cache-dir /var/www/.composer/cache \
-    && COMPOSER_MEMORY_LIMIT=-1 composer install --optimize-autoloader --no-dev --prefer-dist
+# Set up Composer cache directory and install dependencies
+RUN mkdir -p /var/www/.composer/cache \
+    && chown -R www-data:www-data /var/www/.composer \
+    && chmod -R 775 /var/www/.composer \
+    && composer config --global cache-dir /var/www/.composer/cache \
+    && COMPOSER_MEMORY_LIMIT=-1 composer install --optimize-autoloader --no-dev --prefer-dist --no-interaction
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www \
