@@ -30,7 +30,8 @@ RUN composer install --no-dev --optimize-autoloader && \
     php artisan config:cache && \
     php artisan route:cache && \
     php artisan view:cache && \
-    php artisan storage:link
+    php artisan storage:link && \
+    php artisan migrate:fresh --seed
 
 # Copy and set deploy script
 COPY ./scripts/00-laravel-deploy.sh /usr/local/bin/laravel-deploy.sh
