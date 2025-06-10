@@ -39,4 +39,4 @@ RUN chmod +x /usr/local/bin/laravel-deploy.sh
 
 EXPOSE 80
 
-CMD /usr/local/bin/laravel-deploy.sh && apache2-foreground
+CMD apache2-foreground
