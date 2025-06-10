@@ -1,39 +1,35 @@
-FROM php:8.2-apache
+FROM php:8.1-fpm
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
-    zip unzip git curl libpng-dev libonig-dev libxml2-dev libpq-dev \
-    && docker-php-ext-install pdo pdo_pgsql mbstring exif pcntl bcmath gd
+    git \
+    curl \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    zip \
+    unzip
 
-# Enable Apache Rewrite Module
-RUN a2enmod rewrite
-RUN sed -i 's/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
+# Install PHP extensions
+RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 
 # Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Set working directory
-WORKDIR /var/www/html
+WORKDIR /var/www
 
 # Copy project files
-COPY . /var/www/html
+COPY . .
+
+# Install dependencies
+RUN composer install --optimize-autoloader --no-dev
 
 # Set permissions
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
-RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+RUN chown -R www-data:www-data /var/www
+RUN chmod -R 755 /var/www/storage
 
-# Copy Apache configuration
-COPY ./conf/apache/laravel.conf /etc/apache2/sites-available/000-default.conf
+# Expose port
+EXPOSE 9000
 
-# Install dependencies and optimize Laravel
-RUN composer install --no-dev --optimize-autoloader && \
-    php artisan config:cache && \
-    php artisan route:cache && \
-    php artisan view:cache && \
-    php artisan storage:link && \
-    php artisan migrate:fresh --seed
-
-
-EXPOSE 80
-
-CMD apache2-foreground
+CMD ["php-fpm"]

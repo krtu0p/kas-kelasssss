@@ -1,19 +1,27 @@
 services:
   - type: web
-    name: kas-kelasssss
-    runtime: php
-    buildCommand: |
-      composer install --no-dev --optimize-autoloader
-      php artisan config:cache
-      php artisan route:cache
-      php artisan view:cache
-      php artisan storage:link
-    startCommand: php artisan serve --host=0.0.0.0 --port=10000
+    name: laravel-app
+    env: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
     envVars:
+      - key: APP_KEY
+        generateValue: true
       - key: APP_ENV
         value: production
       - key: APP_DEBUG
         value: false
-      # tambahin APP_KEY, DB_*, dll di dashboard atau langsung di sini
-
-    port: 10000
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        value: dpg-d13ringgjchc73fg4vt0-a
+      - key: DB_PORT
+        value: 5432
+      - key: DB_DATABASE
+        value: kas_kelas_p07k
+      - key: DB_USERNAME
+        value: kas
+      - key: DB_PASSWORD
+        fromService:
+          name: kas_kelas_p07k
+          property: password
