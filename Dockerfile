@@ -33,7 +33,8 @@ RUN composer install --optimize-autoloader --no-dev
 # Laravel setup
 RUN cp .env.example .env && \
     php artisan config:clear && \
-    php artisan key:generate
+    php artisan key:generate && \
+    php artisan migrate --seed
 
 EXPOSE 80
 
